@@ -1,0 +1,1500 @@
+/**
+ * 
+ */
+package gov.usgs.jem.binarymodelingdata.input;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import gov.usgs.jem.binarymodelingdata.BMDHeader;
+import gov.usgs.jem.binarymodelingdata.Concentration;
+import gov.usgs.jem.binarymodelingdata.Concentrations;
+
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TimeZone;
+
+import org.apache.log4j.Level;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ContiguousSet;
+import com.google.common.collect.DiscreteDomain;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
+import com.google.common.collect.Table.Cell;
+import com.google.common.collect.TreeBasedTable;
+import com.google.common.collect.UnmodifiableIterator;
+import com.google.common.io.Files;
+import com.google.common.primitives.Ints;
+
+/**
+ * Reads WASP BMD output files. Based on clsBMD.vb @
+ * http://wrdb.codeplex.com/SourceControl/latest.
+ * 
+ * BMD file structure is configured as follows:
+ * <ul>
+ * <li>Header (78 bytes)</li>
+ * 
+ * <li>Variables (18 single-octet chars for name followed by 12 single-octet
+ * chars for units)</li>
+ * 
+ * <li>Concs ("concentrations": floats arranged by Segment, Time, then Variable)
+ * </li>
+ * 
+ * <li>Times (doubles: number of days since seed year)</li>
+ * 
+ * <li>MIN/MAX VAR (float pairs of min/max values for each variable)</li>
+ * 
+ * <li>MIN/MAX SEG-VAR> (float pairs of min/max values for each segment and
+ * variable)</li>
+ * 
+ * <li>SEGNAMES (15 single-octet char names for each segment)</li>
+ * </ul>
+ * 
+ * @author mckelvym
+ * @since Apr 17, 2014
+ * 
+ */
+public class BMDReader
+{
+	/**
+	 * Query class for getting concentrations data.
+	 * 
+	 * @author mckelvym
+	 * @since Apr 22, 2014
+	 * 
+	 */
+	public final class ConcentrationsQuery
+	{
+		/**
+		 * The indices into {@link BMDReader#m_SegmentNames} to query
+		 * 
+		 * @since Apr 22, 2014
+		 */
+		private final SortedSet<Integer>	m_qSegments;
+
+		/**
+		 * The indices into {@link BMDReader#m_Times} to query
+		 * 
+		 * @since Apr 22, 2014
+		 */
+		private final SortedSet<Integer>	m_qTimeSteps;
+
+		/**
+		 * The indices into {@link BMDReader#m_VariableNames} to query
+		 * 
+		 * @since Apr 22, 2014
+		 */
+		private final SortedSet<Integer>	m_qVariables;
+
+		/**
+		 * Create a new, empty query
+		 * 
+		 * @since Apr 22, 2014
+		 */
+		private ConcentrationsQuery()
+		{
+			m_qVariables = Sets.newTreeSet();
+			m_qSegments = Sets.newTreeSet();
+			m_qTimeSteps = Sets.newTreeSet();
+		}
+
+		/**
+		 * Executes the query and returns the results as a
+		 * {@link Concentrations} collection
+		 * 
+		 * @return the results of the query.
+		 * @throws IOException
+		 * @since Apr 22, 2014
+		 */
+		public Concentrations execute() throws IOException
+		{
+			return readConcentrations(this);
+		}
+
+		/**
+		 * Determines if the given variable index, segment index, and time index
+		 * are part of the query.
+		 * 
+		 * @param p_VariableIndex
+		 *            the variable index (see {@link BMDReader#m_VariableNames})
+		 * @param p_SegmentIndex
+		 *            the segment index (see {@link BMDReader#m_SegmentNames})
+		 * @param p_TimeIndex
+		 *            the time index (see {@link BMDReader#m_Times})
+		 * @return true if this given indices are part of the query
+		 * @since Apr 23, 2014
+		 */
+		private boolean isInQuery(final int p_VariableIndex,
+				final int p_SegmentIndex, final int p_TimeIndex)
+		{
+			return m_qVariables.contains(p_VariableIndex)
+					&& m_qSegments.contains(p_SegmentIndex)
+					&& m_qTimeSteps.contains(p_TimeIndex);
+		}
+
+		/**
+		 * Updates the query indices for matches within the reference list of
+		 * the to-add items. In other words, for every element in the to-add
+		 * array that is present in the reference list, the index of said item
+		 * in the reference list is added to the sorted set.
+		 * 
+		 * @param p_QParam
+		 *            the sorted set containing indices into the reference list
+		 * @param p_ReferenceList
+		 *            the reference list containing valid keys
+		 * @param p_ToAdd
+		 *            the items to add that must be present in the reference
+		 *            list
+		 * @since Apr 22, 2014
+		 */
+		private <T> void updateQIndices(final SortedSet<Integer> p_QParam,
+				final List<T> p_ReferenceList, final T... p_ToAdd)
+		{
+			for (final T elem : p_ToAdd)
+			{
+				final int index = p_ReferenceList.indexOf(elem);
+				if (index >= 0)
+				{
+					p_QParam.add(index);
+				}
+			}
+		}
+
+		/**
+		 * Updates the query indices for matches within the reference index map
+		 * of the to-add items. In other words, for every element in the to-add
+		 * array that is present (as a key) in the reference map, the index of
+		 * said item is added to the sorted set.
+		 * 
+		 * @param p_QParam
+		 *            the sorted set containing indices into the reference list
+		 * @param p_ReferenceIndex
+		 *            the reference index map containing valid keys
+		 * @param p_ToAdd
+		 *            the items to add that must be present in the reference
+		 *            list
+		 * @since Apr 22, 2014
+		 */
+		private <T> void updateQIndices(final SortedSet<Integer> p_QParam,
+				final Map<T, Integer> p_ReferenceIndex, final T... p_ToAdd)
+		{
+			for (final T elem : p_ToAdd)
+			{
+				final int index = p_ReferenceIndex.get(elem);
+				if (index >= 0)
+				{
+					p_QParam.add(index);
+				}
+			}
+		}
+
+		/**
+		 * Checks that the query is ready for {@link #execute()}
+		 * 
+		 * @throws IllegalStateException
+		 * @since Apr 22, 2014
+		 */
+		public void validate() throws IllegalStateException
+		{
+			checkState(!m_qVariables.isEmpty(), "No variables specified.");
+			checkState(!m_qSegments.isEmpty(), "No segments specified.");
+			checkState(!m_qTimeSteps.isEmpty(), "No timesteps specified.");
+		}
+
+		/**
+		 * Use all segments in the query.
+		 * 
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withAllSegments()
+		{
+			m_qSegments.clear();
+			m_qSegments.addAll(ContiguousSet.create(
+					Range.closedOpen(0, m_SegmentNames.size()),
+					DiscreteDomain.integers()).asList());
+			return this;
+		}
+
+		/**
+		 * Use all time steps in the query.
+		 * 
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withAllTimeSteps()
+		{
+			m_qTimeSteps.clear();
+			m_qTimeSteps.addAll(getTimeStepIndices());
+			return this;
+		}
+
+		/**
+		 * Use all variables in the query.
+		 * 
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withAllVariables()
+		{
+			m_qVariables.clear();
+			m_qVariables.addAll(ContiguousSet.create(
+					Range.closedOpen(0, m_VariableNames.size()),
+					DiscreteDomain.integers()).asList());
+			return this;
+		}
+
+		/**
+		 * Add the pcodes (which are an alias for variable names) to the query.
+		 * 
+		 * @param p_PCodes
+		 *            the pcodes to add to the query
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withPCodes(final String... p_PCodes)
+		{
+			updateQIndices(m_qVariables, m_PCodes, p_PCodes);
+			return this;
+		}
+
+		/**
+		 * Add the segment names to the query.
+		 * 
+		 * @param p_SegmentNames
+		 *            the name of segments to add to the query
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withSegments(final String... p_SegmentNames)
+		{
+			updateQIndices(m_qSegments, m_SegmentNamesIndex, p_SegmentNames);
+			return this;
+		}
+
+		/**
+		 * Add the time steps to the query.
+		 * 
+		 * @param p_TimeSteps
+		 *            the time steps to add to the query
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withTimeSteps(final Integer... p_TimeSteps)
+		{
+			updateQIndices(m_qTimeSteps, getTimeStepIndices(), p_TimeSteps);
+			return this;
+		}
+
+		/**
+		 * Add the variable names to the query.
+		 * 
+		 * @param p_VariableNames
+		 *            the name of variables to add to the query
+		 * @return this
+		 * @since Apr 22, 2014
+		 */
+		public ConcentrationsQuery withVariables(
+				final String... p_VariableNames)
+		{
+			updateQIndices(m_qVariables, m_VariableNamesIndex, p_VariableNames);
+			return this;
+		}
+	}
+
+	/**
+	 * Number of bytes representing concentrations values (float)
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private static final int				CONCENTRATIONS_SIZE	= 4;
+
+	/**
+	 * Class logger
+	 */
+	private static org.apache.log4j.Logger	log					= org.apache.log4j.Logger
+																		.getLogger(BMDReader.class);
+
+	/**
+	 * Number of bytes representing segment names (15 single-octet chars)
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private static final int				SEGMENT_NAME_SIZE	= 15;
+
+	/**
+	 * Number of bytes representing time stamps (double
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private static final int				TIMESTAMP_SIZE		= 8;
+
+	/**
+	 * Number of bytes representing variable names (18 single-octet chars)
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private static final int				VARIABLE_NAME_SIZE	= 18;
+
+	/**
+	 * Number of bytes representing variable units (12 single-octet chars)
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private static final int				VARIABLE_UNIT_SIZE	= 12;
+
+	/**
+	 * Used mainly for "toString" implementations, this takes an array
+	 * transforms it into a new array that retains the first two elements, adds
+	 * ellipses as the third element, and retains the last element as the fourth
+	 * output element. For each element, calls its toString() method.
+	 * 
+	 * @param p_Array
+	 *            An input array
+	 * @return a new array representing an "abbreviated" version of the input
+	 *         array
+	 * @since Dec 9, 2013
+	 */
+	public static String[] abbreviate(final Object[] p_Array)
+	{
+		if (p_Array == null)
+		{
+			return new String[0];
+		}
+		if (p_Array.length <= 4)
+		{
+			final String[] output = new String[p_Array.length];
+			for (int i = 0; i < p_Array.length; i++)
+			{
+				output[i] = String.valueOf(p_Array[i]);
+			}
+			return output;
+		}
+
+		final String[] output = new String[4];
+		output[0] = String.valueOf(p_Array[0]);
+		output[1] = String.valueOf(p_Array[1]);
+		output[2] = "...";
+		output[3] = String.valueOf(p_Array[p_Array.length - 1]);
+		return output;
+	}
+
+	/**
+	 * Open the BMD file at the provided path and read its header
+	 * 
+	 * @param p_FilePath
+	 *            the path to the BMD file
+	 * @return the {@link BMDReader}
+	 * @throws IOException
+	 * @since Apr 21, 2014
+	 */
+	public static BMDReader open(final String p_FilePath) throws IOException
+	{
+		log.setLevel(Level.INFO);
+		return openInternal(p_FilePath);
+	}
+
+	/**
+	 * Open the BMD file at the provided path and read its header. Debugging
+	 * messages will be logged.
+	 * 
+	 * @param p_FilePath
+	 *            the path to the BMD file
+	 * @return the {@link BMDReader}
+	 * @throws IOException
+	 * @since Apr 21, 2014
+	 */
+	public static BMDReader openDebug(final String p_FilePath)
+			throws IOException
+	{
+		return openInternal(p_FilePath);
+	}
+
+	/**
+	 * Open the BMD file at the provided path and read its header. Debugging
+	 * messages will be logged.
+	 * 
+	 * @param p_FilePath
+	 *            the path to the BMD file
+	 * @return the {@link BMDReader}
+	 * @throws IOException
+	 * @since Apr 21, 2014
+	 */
+	private static BMDReader openInternal(final String p_FilePath)
+			throws IOException
+	{
+		checkNotNull(p_FilePath, "File path required.");
+		checkArgument(Objects.equal("bmd", Files.getFileExtension(p_FilePath)
+				.toLowerCase()), "BMD file required, but got %s instead",
+				p_FilePath);
+		final BMDReader bmdReader = new BMDReader(p_FilePath);
+		bmdReader.readHeader();
+		return bmdReader;
+	}
+
+	/**
+	 * The {@link ByteOrder} to read from the file.
+	 * 
+	 * @since Apr 22, 2014
+	 */
+	private final ByteOrder						m_ByteOrder;
+
+	/**
+	 * Computed after the size of the dimensions are known. This is the number
+	 * of bytes into the file where concentrations values can be found.
+	 * 
+	 * @since Apr 18, 2014
+	 */
+	private long								m_ConcentrationsLocation;
+
+	/**
+	 * @see #getDates()
+	 * @since Apr 23, 2014
+	 */
+	private final List<Long>					m_Dates;
+
+	/**
+	 * The data input stream used to read from the file.
+	 * 
+	 * @since Apr 22, 2014
+	 */
+	private SeekableDataFileInputStream			m_DIS;
+
+	/**
+	 * The path to the BMD file
+	 * 
+	 * @see #getFilePath()
+	 * @since Apr 22, 2014
+	 */
+	private final String						m_FilePath;
+
+	/**
+	 * The header for the BMD file
+	 * 
+	 * @see #getHeader()
+	 * @since Apr 18, 2014
+	 */
+	private BMDHeader							m_Header;
+
+	/**
+	 * Mapping of variable name to maximum value.
+	 * 
+	 * @see #getVariableMax(String)
+	 * @since Apr 18, 2014
+	 */
+	private final Map<String, Float>			m_MaxOverVars;
+
+	/**
+	 * Variable name, segment name -> maximum value
+	 * 
+	 * @see #getVariableSegmentMax(String, String)
+	 * @since Apr 18, 2014
+	 */
+	private final Table<String, String, Float>	m_MaxOverVarSegs;
+
+	/**
+	 * Computed after the size of the dimensions are known. This is the number
+	 * of bytes into the file where the min/max values for segments can be
+	 * found.
+	 * 
+	 * @since Apr 18, 2014
+	 */
+	private long								m_MinMaxOverVarSegsLocation;
+
+	/**
+	 * Computed after the size of the dimensions are known. This is the number
+	 * of bytes into the file where the min/max values for variables can be
+	 * found.
+	 * 
+	 * @since Apr 18, 2014
+	 */
+	private long								m_MinMaxOverVarsLocation;
+
+	/**
+	 * Mapping of variable name to minimum value.
+	 * 
+	 * @see #getVariableMin(String)
+	 * @since Apr 18, 2014
+	 */
+	private final Map<String, Float>			m_MinOverVars;
+
+	/**
+	 * Variable name, segment name -> minimum value
+	 * 
+	 * @see #getVariableSegmentMin(String, String)
+	 * @since Apr 18, 2014
+	 */
+	private final Table<String, String, Float>	m_MinOverVarSegs;
+
+	/**
+	 * Same size as {@link #m_VariableNames} but strings are modified slightly
+	 * so that "Volume (m3)" becomes "VOLUME"
+	 * 
+	 * @see #getPCodes()
+	 * @since Apr 22, 2014
+	 */
+	private final List<String>					m_PCodes;
+
+	/**
+	 * @see #getSeedDate()
+	 * @since Apr 18, 2014
+	 */
+	private Date								m_SeedDate;
+
+	/**
+	 * @see #getSegmentNames()
+	 * @since Apr 18, 2014
+	 */
+	private final List<String>					m_SegmentNames;
+
+	/**
+	 * Used so that {@link #m_SegmentNames} {@link List#indexOf(Object)}
+	 * operations are cheaper
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private final Map<String, Integer>			m_SegmentNamesIndex;
+
+	/**
+	 * Computed after the size of the dimensions are known. This is the number
+	 * of bytes into the file where the segment names can be found.
+	 * 
+	 * @since Apr 18, 2014
+	 */
+	private long								m_SegmentNamesLocation;
+
+	/**
+	 * @see #getTimes()
+	 * @since Apr 18, 2014
+	 */
+	private final List<Double>					m_Times;
+
+	/**
+	 * Computed after the size of the dimensions are known. This is the number
+	 * of bytes into the file where the time values can be found.
+	 * 
+	 * @since Apr 18, 2014
+	 */
+	private long								m_TimesLocation;
+
+	/**
+	 * @see #getVariableNames()
+	 * @since Apr 18, 2014
+	 */
+	private final List<String>					m_VariableNames;
+
+	/**
+	 * Used so that {@link #m_VariableNames} {@link List#indexOf(Object)}
+	 * operations are cheaper
+	 * 
+	 * @since Apr 23, 2014
+	 */
+	private final Map<String, Integer>			m_VariableNamesIndex;
+
+	/**
+	 * Mapping of variable name to variable units
+	 * 
+	 * @see #getVariableUnits()
+	 * @since Apr 18, 2014
+	 */
+	private final Map<String, String>			m_VariableUnits;
+
+	/**
+	 * Create a new reader for the BMD file at the provided path
+	 * 
+	 * @param p_FilePath
+	 *            path to the BMD file
+	 * @since Apr 23, 2014
+	 */
+	private BMDReader(final String p_FilePath)
+	{
+		m_FilePath = checkNotNull(p_FilePath);
+		m_VariableNames = Lists.newArrayList();
+		m_VariableNamesIndex = Maps.newHashMap();
+		m_PCodes = Lists.newArrayList();
+		m_VariableUnits = Maps.newHashMap();
+		m_SegmentNames = Lists.newArrayList();
+		m_SegmentNamesIndex = Maps.newHashMap();
+		m_Times = Lists.newArrayList();
+		m_Dates = Lists.newArrayList();
+		m_MinOverVars = Maps.newHashMap();
+		m_MaxOverVars = Maps.newHashMap();
+		m_MinOverVarSegs = HashBasedTable.create();
+		m_MaxOverVarSegs = HashBasedTable.create();
+		m_ByteOrder = ByteOrder.LITTLE_ENDIAN;
+	}
+
+	/**
+	 * Get the dates that correspond to {@link #getTimes()} and
+	 * {@link #getTimeStepIndices()}
+	 * 
+	 * @return the dates constructed from the seed
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<Date> getDates()
+	{
+		final ImmutableList.Builder<Date> builder = ImmutableList.builder();
+
+		for (final Long ts : m_Dates)
+		{
+			builder.add(new Date(ts));
+		}
+
+		return builder.build();
+	}
+
+	/**
+	 * Get the opened file path
+	 * 
+	 * @return the opened file path
+	 * @since Apr 23, 2014
+	 */
+	public String getFilePath()
+	{
+		return m_FilePath;
+	}
+
+	/**
+	 * Get the file header
+	 * 
+	 * @return the file header
+	 * @since Apr 23, 2014
+	 */
+	public BMDHeader getHeader()
+	{
+		return m_Header;
+	}
+
+	/**
+	 * Get the list of PCodes. These are essentially aliases for the variable
+	 * names, so this list is the same size as the one retrieved from
+	 * {@link #getVariableNames()}
+	 * 
+	 * @return the list of PCodes
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<String> getPCodes()
+	{
+		return ImmutableList.copyOf(m_PCodes);
+	}
+
+	/**
+	 * Get the seed date
+	 * 
+	 * @return the seed date
+	 * @since Apr 23, 2014
+	 */
+	public Date getSeedDate()
+	{
+		return new Date(m_SeedDate.getTime());
+	}
+
+	/**
+	 * Get the list of segment names
+	 * 
+	 * @return the list of segment names
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<String> getSegmentNames()
+	{
+		return ImmutableList.copyOf(m_SegmentNames);
+	}
+
+	/**
+	 * Get the raw time values read from the file
+	 * 
+	 * @return the raw time values read from the file
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<Double> getTimes()
+	{
+		return ImmutableList.copyOf(m_Times);
+	}
+
+	/**
+	 * Creates a new contiguous set of integers starting at 0 and proceeding to
+	 * 1 - the size of the times list.
+	 * 
+	 * @return
+	 * @since Apr 22, 2014
+	 */
+	private ImmutableList<Integer> getTimeStepIndices()
+	{
+		return ContiguousSet.create(Range.closedOpen(0, m_Times.size()),
+				DiscreteDomain.integers()).asList();
+	}
+
+	/**
+	 * Get the maximum value, retrieved from the header, for the specified
+	 * variable.
+	 * 
+	 * @param p_VariableName
+	 *            the variable name
+	 * @return the maximum value
+	 * @throws IllegalArgumentException
+	 *             if the variable name does not exist
+	 * @since Apr 23, 2014
+	 */
+	public Float getVariableMax(final String p_VariableName)
+	{
+		try
+		{
+			return checkNotNull(m_MaxOverVars.get(checkNotNull(p_VariableName,
+					"Variable name required.")), "No value exists for '%s'",
+					p_VariableName);
+		}
+		catch (final NullPointerException e)
+		{
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get the minimum value, retrieved from the header, for the specified
+	 * variable.
+	 * 
+	 * @param p_VariableName
+	 *            the variable name
+	 * @return the minimum value
+	 * @throws IllegalArgumentException
+	 *             if the variable name does not exist
+	 * @since Apr 23, 2014
+	 */
+	public Float getVariableMin(final String p_VariableName)
+	{
+		try
+		{
+			return checkNotNull(m_MinOverVars.get(checkNotNull(p_VariableName,
+					"Variable name required.")), "No value exists for '%s'",
+					p_VariableName);
+		}
+		catch (final NullPointerException e)
+		{
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get the list of variable names
+	 * 
+	 * @return the list of variable names
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<String> getVariableNames()
+	{
+		return ImmutableList.copyOf(m_VariableNames);
+	}
+
+	/**
+	 * Get the maximum value, retrieved from the header, for the specified
+	 * variable segment
+	 * 
+	 * @param p_VariableName
+	 *            the variable name
+	 * @param p_SegmentName
+	 *            the segment name
+	 * @return the maximum value
+	 * @throws IllegalArgumentException
+	 *             if the variable name or segment name does not exist
+	 * @since Apr 23, 2014
+	 */
+	public Float getVariableSegmentMax(final String p_VariableName,
+			final String p_SegmentName)
+	{
+		try
+		{
+			return checkNotNull(m_MaxOverVarSegs.get(
+					checkNotNull(p_VariableName, "Variable name required."),
+					checkNotNull(p_SegmentName, "Segment name required.")),
+					"No value exists for '%s', '%s'", p_VariableName,
+					p_SegmentName);
+		}
+		catch (final NullPointerException e)
+		{
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get the minimum value, retrieved from the header, for the specified
+	 * variable segment
+	 * 
+	 * @param p_VariableName
+	 *            the variable name
+	 * @param p_SegmentName
+	 *            the segment name
+	 * @return the minimum value
+	 * @throws IllegalArgumentException
+	 *             if the variable name or segment name does not exist
+	 * @since Apr 23, 2014
+	 */
+	public Float getVariableSegmentMin(final String p_VariableName,
+			final String p_SegmentName)
+	{
+		try
+		{
+			return checkNotNull(m_MinOverVarSegs.get(
+					checkNotNull(p_VariableName, "Variable name required."),
+					checkNotNull(p_SegmentName, "Segment name required.")),
+					"No value exists for '%s', '%s'", p_VariableName,
+					p_SegmentName);
+		}
+		catch (final NullPointerException e)
+		{
+			throw new IllegalArgumentException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Get the variable units (mapping of variable name -> units)
+	 * 
+	 * @return the variable units (mapping of variable name -> units)
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableMap<String, String> getVariableUnits()
+	{
+		return ImmutableMap.copyOf(m_VariableUnits);
+	}
+
+	/**
+	 * Construct a new query for concentrations.
+	 * 
+	 * @return
+	 * @since Apr 22, 2014
+	 */
+	public ConcentrationsQuery newConcentrationsQuery()
+	{
+		return new ConcentrationsQuery();
+	}
+
+	/**
+	 * Reads the concentrations corresponding to the {@link ConcentrationsQuery}
+	 * into a table.
+	 * 
+	 * @param p_Query
+	 *            the valid {@link ConcentrationsQuery}
+	 * @return the {@link Concentrations} for the provided
+	 *         {@link ConcentrationsQuery}
+	 * @throws IOException
+	 * @since Apr 22, 2014
+	 */
+	private Concentrations readConcentrations(final ConcentrationsQuery p_Query)
+			throws IOException
+	{
+		checkNotNull(p_Query, "Query cannot be null.");
+		p_Query.validate();
+		checkState(m_DIS != null, "Data input stream is not ready.");
+		m_DIS.seek((int) m_ConcentrationsLocation);
+
+		/**
+		 * Number of bytes in a float (4)
+		 */
+		final int FBYTES = Float.SIZE / 8;
+		final Comparator<String> variableComparator = new Comparator<String>()
+		{
+			@Override
+			public int compare(final String p_o1, final String p_o2)
+			{
+				return Ints.compare(m_VariableNamesIndex.get(p_o1),
+						m_VariableNamesIndex.get(p_o2));
+			}
+		};
+		final Comparator<String> segmentComparator = new Comparator<String>()
+		{
+			@Override
+			public int compare(final String p_o1, final String p_o2)
+			{
+				return Ints.compare(m_SegmentNamesIndex.get(p_o1),
+						m_SegmentNamesIndex.get(p_o2));
+			}
+		};
+		/**
+		 * Table mapping (variable name, segment name) -> sorted map of (time
+		 * step -> value)
+		 */
+		final Table<String, String, SortedMap<Integer, Float>> results = TreeBasedTable
+				.create(variableComparator, segmentComparator);
+		/**
+		 * We can either calculate the skip from the current seek, or just keep
+		 * a tally of bytes to skip.
+		 * 
+		 * If calculating skip, use: skip = t * m_SegmentNames.size() *
+		 * m_VariableNames.size() FBYTES + s * m_VariableNames.size() * FBYTES +
+		 * v * FBYTES
+		 */
+		int skipBytes = 0;
+		for (int timeNum = 0; timeNum < m_Header.getTimesSize(); timeNum++)
+		{
+			for (int segmentNum = 0; segmentNum < m_Header.getSegmentsSize(); segmentNum++)
+			{
+				for (int variableNum = 0; variableNum < m_Header
+						.getVariablesSize(); variableNum++)
+				{
+
+					if (p_Query.isInQuery(variableNum, segmentNum, timeNum))
+					{
+						final int skippedBytes = m_DIS
+								.skipBytesAggressive(skipBytes);
+						checkState(
+								skippedBytes == skipBytes,
+								"Unable to continue reading from the file (tried to skip %s bytes, but could only skip %s)",
+								skipBytes, skippedBytes);
+
+						/**
+						 * Reset skip count.
+						 */
+						skipBytes = 0;
+
+						final String variableName = m_VariableNames
+								.get(variableNum);
+						final String segmentName = m_SegmentNames
+								.get(segmentNum);
+						final float value = m_DIS.readFloat();
+						if (!results.contains(variableName, segmentName))
+						{
+							final SortedMap<Integer, Float> timeValues = Maps
+									.newTreeMap();
+							results.put(variableName, segmentName, timeValues);
+						}
+
+						results.get(variableName, segmentName).put(timeNum,
+								value);
+					}
+					else
+					{
+						/**
+						 * Equivalent of reading one float.
+						 */
+						skipBytes += FBYTES;
+					}
+				}
+			}
+		}
+
+		final List<String> tmpVariables = Lists.newArrayList(m_VariableNames);
+		final List<String> tmpSegments = Lists.newArrayList(m_SegmentNames);
+		final List<Integer> tmpTimeSteps = Lists
+				.newArrayList(getTimeStepIndices());
+
+		tmpVariables.retainAll(results.rowKeySet());
+		tmpSegments.retainAll(results.columnKeySet());
+		tmpTimeSteps.retainAll(p_Query.m_qTimeSteps);
+
+		final ImmutableList<String> variables = ImmutableList
+				.copyOf(tmpVariables);
+		final ImmutableList<String> segments = ImmutableList
+				.copyOf(tmpSegments);
+		final ImmutableList<Integer> timeSteps = ImmutableList
+				.copyOf(tmpTimeSteps);
+
+		return new Concentrations()
+		{
+			@Override
+			public Concentration get(final String p_VariableName,
+					final String p_SegmentName, final int p_TimeStep)
+			{
+				checkArgument(results.contains(p_VariableName, p_SegmentName),
+						"Invalid variable (%s) or segment (%s) name.",
+						p_VariableName, p_SegmentName);
+				final SortedMap<Integer, Float> timeMap = results.get(
+						p_VariableName, p_SegmentName);
+				checkArgument(timeMap.containsKey(p_TimeStep),
+						"Invalid time step: %s", p_TimeStep);
+				final Double time = m_Times.get(p_TimeStep);
+				final Float value = timeMap.get(p_TimeStep);
+				return new ConcentrationImpl(p_VariableName, p_SegmentName,
+						time, p_TimeStep, value);
+			}
+
+			@Override
+			public List<String> getSegments()
+			{
+				return segments;
+			}
+
+			@Override
+			public List<Integer> getTimeSteps()
+			{
+				return timeSteps;
+			}
+
+			@Override
+			public List<String> getVariables()
+			{
+				return variables;
+			}
+
+			@Override
+			public Iterator<Concentration> iterator()
+			{
+				return new UnmodifiableIterator<Concentration>()
+				{
+					/**
+					 * The time steps and values for a particular variable and
+					 * segment
+					 * 
+					 * @since Apr 23, 2014
+					 */
+					Cell<String, String, SortedMap<Integer, Float>>					m_Cell			= null;
+
+					/**
+					 * Iterates the variables and segments
+					 * 
+					 * @since Apr 23, 2014
+					 */
+					final Iterator<Cell<String, String, SortedMap<Integer, Float>>>	m_CellIterator	= results
+																											.cellSet()
+																											.iterator();
+
+					/**
+					 * Time steps and values iterator
+					 * 
+					 * @since Apr 23, 2014
+					 */
+					Iterator<Entry<Integer, Float>>									m_TimeIterator	= null;
+
+					@Override
+					public boolean hasNext()
+					{
+						return m_TimeIterator != null
+								&& m_TimeIterator.hasNext()
+								|| m_CellIterator.hasNext();
+					}
+
+					@Override
+					public Concentration next()
+					{
+						if (!hasNext())
+						{
+							throw new NoSuchElementException();
+						}
+						if (m_TimeIterator == null || !m_TimeIterator.hasNext())
+						{
+							m_Cell = m_CellIterator.next();
+							m_TimeIterator = m_Cell.getValue().entrySet()
+									.iterator();
+						}
+
+						final Entry<Integer, Float> nextEntry = m_TimeIterator
+								.next();
+						final Integer p_TimeStep = nextEntry.getKey();
+						final Double time = m_Times.get(p_TimeStep);
+						final Float value = nextEntry.getValue();
+						return new ConcentrationImpl(m_Cell.getRowKey(),
+								m_Cell.getColumnKey(), time, p_TimeStep, value);
+					}
+				};
+			}
+		};
+	}
+
+	/**
+	 * Reads the header from the file, initializing the {@link #m_DIS},
+	 * {@link #m_Header} fields and retrieving the variable names, variable
+	 * units, segment names, min/max over variables, and min/max over variable
+	 * segments.
+	 * 
+	 * Times are not retrieved (aside from header information).
+	 * 
+	 * @throws IOException
+	 * @since Apr 21, 2014
+	 */
+	private void readHeader() throws IOException
+	{
+		final BMDHeader.Builder headerBuilder = BMDHeader.builder();
+		log.debug(String.format("Open %s", m_FilePath));
+		m_DIS = new SeekableDataFileInputStreamImpl(m_FilePath, m_ByteOrder);
+
+		try
+		{
+			/**
+			 * Read header. Do not modify the order that these local variables
+			 * are declared as the data read process is order-dependent.
+			 */
+			final String signature = new String(m_DIS.readCharsAsAscii(3));
+			final String sourceType = new String(m_DIS.readCharsAsAscii(1));
+			final String producer = new String(m_DIS.readCharsAsAscii(1));
+			final float version = m_DIS.readFloat();
+			final int oldSeedTime = m_DIS.readUInt32();
+			final int seedSecond = m_DIS.readInt();
+			final int seedJDay = m_DIS.readInt();
+			final String spaces = new String(
+					m_DIS.readCharsAsAscii(BMDHeader.SPACE_SIZE));
+			final int numSegments = m_DIS.readInt();
+			final int numTimes = m_DIS.readInt();
+			final int numVars = m_DIS.readInt();
+			final double startTime = m_DIS.readDouble();
+			final double endTime = m_DIS.readDouble();
+			try
+			{
+				m_Header = headerBuilder.withSignature(signature)
+						.withSourceType(sourceType).withProducer(producer)
+						.withVersion(version).withOldSeedTime(oldSeedTime)
+						.withSeedSecond(seedSecond).withSeedJDay(seedJDay)
+						.withSpaces(spaces).withNumSegments(numSegments)
+						.withNumTimes(numTimes).withNumVars(numVars)
+						.withStartTime(startTime).withEndTime(endTime).build();
+				log.debug(m_Header);
+			}
+			catch (final Exception e)
+			{
+				final String message = "Unable to read header from file: "
+						+ m_FilePath;
+				throw new IOException(message, e);
+			}
+
+			/**
+			 * Initialize the seed date.
+			 */
+			final TimeZone timeZone = TimeZone.getTimeZone("UTC");
+			final Calendar cal = Calendar.getInstance();
+			cal.setTimeZone(timeZone);
+
+			if (seedJDay != 0 && oldSeedTime == 0)
+			{
+				/**
+				 * WRDB: Constant was determined by trial and error to force
+				 * match with MOVEM
+				 */
+				final int DATESHIFT = 1721439;
+				/**
+				 * Extract fudge-factor determined in the translation from VB
+				 * source to Java. When comparing dates to those within WRDB,
+				 * the day of month was two days less than it should have been.
+				 */
+				final int DATESHIFT2 = -2;
+
+				/**
+				 * JulianToGregorian
+				 */
+				final int julian = seedJDay;
+				final int totalDays = julian - (DATESHIFT + DATESHIFT2);
+
+				cal.set(Calendar.YEAR, 1);
+				cal.set(Calendar.MONTH, Calendar.JANUARY);
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+
+				cal.add(Calendar.DATE, totalDays);
+				cal.add(Calendar.SECOND, seedSecond);
+			}
+			else if (oldSeedTime != 0)
+			{
+				cal.set(Calendar.YEAR, 1901);
+				cal.set(Calendar.MONTH, Calendar.JANUARY);
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+
+				cal.add(Calendar.SECOND, oldSeedTime);
+			}
+			else
+			{
+				cal.set(Calendar.YEAR, 1970);
+				cal.set(Calendar.MONTH, Calendar.JANUARY);
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+			}
+			m_SeedDate = cal.getTime();
+			final SimpleDateFormat dateFormatUTC = new SimpleDateFormat(
+					"yyyy-MM-dd HH:mm:ss");
+			dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+			log.debug(String.format("Seed Date: %s",
+					dateFormatUTC.format(m_SeedDate)));
+			/**
+			 * Read variable names and units
+			 */
+			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			{
+				final String variableName = new String(
+						m_DIS.readCharsAsAscii(VARIABLE_NAME_SIZE)).trim();
+				final String variableUnits = new String(
+						m_DIS.readCharsAsAscii(VARIABLE_UNIT_SIZE)).trim();
+				String pCode = variableName.replaceFirst("\\(.*", "").trim()
+						.toUpperCase();
+				pCode = pCode.substring(0, Math.min(10, pCode.length()));
+
+				m_VariableNames.add(variableName);
+				m_VariableUnits.put(variableName, variableUnits);
+				m_PCodes.add(pCode);
+				log.debug(String.format(
+						"Variable #%s: '%s';\tPCode: '%s'\tUnits: '%s'",
+						variableNum + 1, variableName, pCode, variableUnits));
+			}
+
+			/**
+			 * Once all the dimensions are known, compute the location of
+			 * various blocks of data
+			 */
+			m_ConcentrationsLocation = BMDHeader.LOCATION_VARIABLES
+					+ (long) m_Header.getVariablesSize()
+					* (VARIABLE_NAME_SIZE + VARIABLE_UNIT_SIZE);
+			m_TimesLocation = m_ConcentrationsLocation
+					+ (long) m_Header.getVariablesSize()
+					* m_Header.getSegmentsSize() * m_Header.getTimesSize()
+					* CONCENTRATIONS_SIZE;
+			m_MinMaxOverVarsLocation = m_TimesLocation
+					+ (long) m_Header.getTimesSize() * TIMESTAMP_SIZE;
+			m_MinMaxOverVarSegsLocation = m_MinMaxOverVarsLocation
+					+ (long) m_Header.getVariablesSize() * CONCENTRATIONS_SIZE
+					* 2;
+			m_SegmentNamesLocation = m_MinMaxOverVarSegsLocation
+					+ (long) m_Header.getVariablesSize()
+					* m_Header.getSegmentsSize() * CONCENTRATIONS_SIZE * 2;
+			log.debug(Objects.toStringHelper("Locations: ")
+					.add("concs", m_ConcentrationsLocation)
+					.add("times", m_TimesLocation)
+					.add("minMaxVars", m_MinMaxOverVarsLocation)
+					.add("minMaxVarSegs", m_MinMaxOverVarSegsLocation)
+					.add("segNames", m_SegmentNamesLocation).toString());
+
+			/**
+			 * skip past times and concs and read stuff at bottom
+			 */
+			m_DIS.seek((int) m_MinMaxOverVarsLocation);
+
+			/**
+			 * Read min/max
+			 */
+			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			{
+				final String variableName = m_VariableNames.get(variableNum);
+				final float min = m_DIS.readFloat();
+				final float max = m_DIS.readFloat();
+				m_MinOverVars.put(variableName, min);
+				m_MaxOverVars.put(variableName, max);
+			}
+
+			/**
+			 * Read min/max per segment, but segment names have not been
+			 * determined yet.
+			 */
+			final Map<String, List<Float>> minOverVarSegs = Maps.newHashMap();
+			final Map<String, List<Float>> maxOverVarSegs = Maps.newHashMap();
+			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			{
+				final String variableName = m_VariableNames.get(variableNum);
+				final List<Float> minOverSegs = Lists.newArrayList();
+				final List<Float> maxOverSegs = Lists.newArrayList();
+				for (int segmentNum = 0; segmentNum < m_Header
+						.getSegmentsSize(); segmentNum++)
+				{
+					final float min = m_DIS.readFloat();
+					final float max = m_DIS.readFloat();
+					minOverSegs.add(min);
+					maxOverSegs.add(max);
+				}
+
+				minOverVarSegs.put(variableName, minOverSegs);
+				maxOverVarSegs.put(variableName, maxOverSegs);
+			}
+
+			/**
+			 * Read segment names, BUT they might not be present.
+			 */
+			try
+			{
+				for (int segmentNum = 0; segmentNum < m_Header
+						.getSegmentsSize(); segmentNum++)
+				{
+					final String segmentName = new String(
+							m_DIS.readCharsAsAscii(SEGMENT_NAME_SIZE)).trim();
+
+					m_SegmentNames.add(segmentName);
+					log.debug(String.format("Segment #%s: '%s'",
+							segmentNum + 1, segmentName));
+				}
+			}
+			catch (final Exception e)
+			{
+				log.warn("Unable to read segment names, but that might be ok.",
+						e);
+				for (int segmentNum = 0; segmentNum < m_Header
+						.getSegmentsSize(); segmentNum++)
+				{
+					final String segmentName = String.format("Segment %s",
+							segmentNum);
+
+					m_SegmentNames.add(segmentName);
+					log.debug(String.format("Segment #%s: '%s'",
+							segmentNum + 1, segmentName));
+				}
+			}
+
+			/**
+			 * From original source: WASP 7.x BMD files omit the last two
+			 * characters so you can get duplicate segment names and don't know
+			 * the K values. WASP always writes out the top layers first
+			 * (highest K values) then works down to the bottom (K=1) Look for
+			 * segment names formatted like "I=iii J=jjj K" and add the correct
+			 * K value automatically. Then, reformat it so it looks like the
+			 * WASP 8 format (I=xxxJ=xxxK=xxx)
+			 */
+			int kMax = 0;
+			int lastJ = Integer.MAX_VALUE;
+			if (!m_SegmentNames.isEmpty())
+			{
+				final Splitter splitter = Splitter.on("=");
+				List<String> splitToList = splitter.splitToList(m_SegmentNames
+						.get(0));
+				boolean doFormat = splitToList.size() >= 2
+						&& splitToList.size() <= 3;
+				if (doFormat)
+				{
+					for (final String segmentName : m_SegmentNames)
+					{
+						/**
+						 * This is carried over from original source.
+						 */
+						splitToList = splitter.splitToList(segmentName);
+						doFormat = splitToList.size() >= 2
+								&& splitToList.size() <= 3;
+						if (!doFormat)
+						{
+							continue;
+						}
+						// int i = Integer.valueOf(segmentName.substring(2,
+						// 2+3));
+						final Integer j = Integer.valueOf(segmentName
+								.substring(8, 8 + 3));
+						if (j < lastJ)
+						{
+							kMax++;
+							lastJ = j;
+						}
+					}
+
+					lastJ = Integer.MAX_VALUE;
+					int k = kMax + 1;
+					for (int segmentNum = 0; segmentNum < m_Header
+							.getSegmentsSize(); segmentNum++)
+					{
+						final String segmentName = m_SegmentNames
+								.get(segmentNum);
+						/**
+						 * This is carried over from original source.
+						 */
+						splitToList = splitter.splitToList(segmentName);
+						doFormat = splitToList.size() >= 2
+								&& splitToList.size() <= 3;
+						if (!doFormat)
+						{
+							continue;
+						}
+						final Integer i = Integer.valueOf(segmentName
+								.substring(2, 2 + 3));
+						final Integer j = Integer.valueOf(segmentName
+								.substring(8, 8 + 3));
+						if (j < lastJ)
+						{
+							k--;
+							lastJ = j;
+							m_SegmentNames
+									.set(segmentNum,
+											String.format("I=%03dJ=%03dK=%03d",
+													i, j, k).trim());
+						}
+					}
+				}
+			}
+
+			/**
+			 * Update the min/max per segment now that we have segment names.
+			 */
+			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			{
+				final String variableName = m_VariableNames.get(variableNum);
+				for (int segmentNum = 0; segmentNum < m_Header
+						.getSegmentsSize(); segmentNum++)
+				{
+					final String segmentName = m_SegmentNames.get(segmentNum);
+					final Float minVarSeg = minOverVarSegs.get(variableName)
+							.get(segmentNum);
+					final Float maxVarSeg = maxOverVarSegs.get(variableName)
+							.get(segmentNum);
+					m_MinOverVarSegs.put(variableName, segmentName, minVarSeg);
+					m_MaxOverVarSegs.put(variableName, segmentName, maxVarSeg);
+				}
+			}
+
+			/**
+			 * Read times
+			 */
+			m_DIS.seek((int) m_TimesLocation);
+			for (int timeNum = 0; timeNum < m_Header.getTimesSize(); timeNum++)
+			{
+				final double t = m_DIS.readDouble();
+				m_Times.add(t);
+
+			}
+			log.debug(String.format("Times: %s",
+					Arrays.toString(abbreviate(m_Times.toArray()))));
+
+			/**
+			 * Calculate and store the "dates"
+			 */
+			final int secsPerDay = 60 * 60 * 24;
+			for (final Double timeValue : m_Times)
+			{
+				cal.setTime(m_SeedDate);
+				final int addSecs = (int) Math.round(secsPerDay * timeValue);
+				cal.add(Calendar.SECOND, addSecs);
+				final long time = cal.getTime().getTime();
+				m_Dates.add(time);
+			}
+			log.debug(String.format("Dates (first, last): (%s, %s)",
+					dateFormatUTC.format(new Date(Iterables.getFirst(m_Dates,
+							0l))), dateFormatUTC.format(new Date(Iterables
+							.getLast(m_Dates)))));
+
+			/**
+			 * Create variable and segment name indexes
+			 */
+			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			{
+				final String variableName = m_VariableNames.get(variableNum);
+				m_VariableNamesIndex.put(variableName, variableNum);
+			}
+			for (int segmentNum = 0; segmentNum < m_Header.getSegmentsSize(); segmentNum++)
+			{
+				final String segmentName = m_SegmentNames.get(segmentNum);
+				m_SegmentNamesIndex.put(segmentName, segmentNum);
+			}
+		}
+		catch (final Throwable t)
+		{
+			log.error("Error reading file.", t);
+			m_DIS.close();
+			m_DIS = null;
+		}
+	}
+}
