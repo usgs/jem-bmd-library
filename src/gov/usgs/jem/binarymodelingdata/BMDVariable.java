@@ -4,6 +4,9 @@ package gov.usgs.jem.binarymodelingdata;
  * Represents a variable from a BMD file. Comparison is based on variable index
  * in the file, not its name.
  * 
+ * <i>Note:</i> {@code hashCode()} and {@code equals(Object)} are NOT
+ * overridden.
+ * 
  * @author mckelvym
  * @since Apr 24, 2014
  * 

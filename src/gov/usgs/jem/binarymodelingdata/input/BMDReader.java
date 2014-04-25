@@ -7,6 +7,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import gov.usgs.jem.binarymodelingdata.BMDHeader;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 import gov.usgs.jem.binarymodelingdata.Concentrations;
 
@@ -15,6 +18,7 @@ import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -28,6 +32,7 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Level;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ContiguousSet;
@@ -84,7 +89,7 @@ public class BMDReader
 	 * @since Apr 22, 2014
 	 * 
 	 */
-	public final class ConcentrationsQuery
+	private final class ConcentrationsQueryImpl implements ConcentrationsQuery
 	{
 		/**
 		 * The indices into {@link BMDReader#m_SegmentNames} to query
@@ -112,7 +117,7 @@ public class BMDReader
 		 * 
 		 * @since Apr 22, 2014
 		 */
-		private ConcentrationsQuery()
+		private ConcentrationsQueryImpl()
 		{
 			m_qVariables = Sets.newTreeSet();
 			m_qSegments = Sets.newTreeSet();
@@ -127,6 +132,7 @@ public class BMDReader
 		 * @throws IOException
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public Concentrations execute() throws IOException
 		{
 			return readConcentrations(this);
@@ -215,8 +221,10 @@ public class BMDReader
 		 * @throws IllegalStateException
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public void validate() throws IllegalStateException
 		{
+
 			checkState(!m_qVariables.isEmpty(), "No variables specified.");
 			checkState(!m_qSegments.isEmpty(), "No segments specified.");
 			checkState(!m_qTimeSteps.isEmpty(), "No timesteps specified.");
@@ -228,6 +236,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withAllSegments()
 		{
 			m_qSegments.clear();
@@ -243,6 +252,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withAllTimeSteps()
 		{
 			m_qTimeSteps.clear();
@@ -256,6 +266,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withAllVariables()
 		{
 			m_qVariables.clear();
@@ -273,6 +284,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withPCodes(final String... p_PCodes)
 		{
 			updateQIndices(m_qVariables, m_PCodes, p_PCodes);
@@ -287,6 +299,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withSegments(final String... p_SegmentNames)
 		{
 			updateQIndices(m_qSegments, m_SegmentNamesIndex, p_SegmentNames);
@@ -301,6 +314,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withTimeSteps(final Integer... p_TimeSteps)
 		{
 			updateQIndices(m_qTimeSteps, getTimeStepIndices(), p_TimeSteps);
@@ -315,6 +329,7 @@ public class BMDReader
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
+		@Override
 		public ConcentrationsQuery withVariables(
 				final String... p_VariableNames)
 		{
@@ -646,22 +661,25 @@ public class BMDReader
 	}
 
 	/**
-	 * Get the dates that correspond to {@link #getTimes()} and
-	 * {@link #getTimeStepIndices()}
+	 * Close the reader.
 	 * 
-	 * @return the dates constructed from the seed
-	 * @since Apr 23, 2014
+	 * @throws IOException
+	 * @since Apr 25, 2014
 	 */
-	public ImmutableList<Date> getDates()
+	public void close() throws IOException
 	{
-		final ImmutableList.Builder<Date> builder = ImmutableList.builder();
-
-		for (final Long ts : m_Dates)
+		try
 		{
-			builder.add(new Date(ts));
+			m_DIS.close();
 		}
-
-		return builder.build();
+		catch (final IOException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			m_DIS = null;
+		}
 	}
 
 	/**
@@ -672,6 +690,7 @@ public class BMDReader
 	 */
 	public String getFilePath()
 	{
+		validate();
 		return m_FilePath;
 	}
 
@@ -683,6 +702,7 @@ public class BMDReader
 	 */
 	public BMDHeader getHeader()
 	{
+		validate();
 		return m_Header;
 	}
 
@@ -696,6 +716,7 @@ public class BMDReader
 	 */
 	public ImmutableList<String> getPCodes()
 	{
+		validate();
 		return ImmutableList.copyOf(m_PCodes);
 	}
 
@@ -707,29 +728,49 @@ public class BMDReader
 	 */
 	public Date getSeedDate()
 	{
+		validate();
 		return new Date(m_SeedDate.getTime());
 	}
 
 	/**
-	 * Get the list of segment names
+	 * Get the list of segments. <i>Note: Constructs a new list of new objects
+	 * for each call.</i>
 	 * 
-	 * @return the list of segment names
+	 * @return the list of segments
 	 * @since Apr 23, 2014
 	 */
-	public ImmutableList<String> getSegmentNames()
+	public ImmutableList<BMDSegment> getSegments()
 	{
-		return ImmutableList.copyOf(m_SegmentNames);
-	}
+		validate();
+		return ImmutableList.copyOf(Lists.transform(m_SegmentNames,
+				new Function<String, BMDSegment>()
+				{
+					@Override
+					public BMDSegment apply(final String p_SegmentName)
+					{
+						return new BMDSegment()
+						{
+							@Override
+							public int compareTo(final BMDSegment p_Other)
+							{
+								return Ints.compare(getIndex(),
+										p_Other.getIndex());
+							}
 
-	/**
-	 * Get the raw time values read from the file
-	 * 
-	 * @return the raw time values read from the file
-	 * @since Apr 23, 2014
-	 */
-	public ImmutableList<Double> getTimes()
-	{
-		return ImmutableList.copyOf(m_Times);
+							@Override
+							public int getIndex()
+							{
+								return m_SegmentNamesIndex.get(p_SegmentName);
+							}
+
+							@Override
+							public String getName()
+							{
+								return p_SegmentName;
+							}
+						};
+					}
+				}));
 	}
 
 	/**
@@ -741,8 +782,62 @@ public class BMDReader
 	 */
 	private ImmutableList<Integer> getTimeStepIndices()
 	{
+		validate();
 		return ContiguousSet.create(Range.closedOpen(0, m_Times.size()),
 				DiscreteDomain.integers()).asList();
+	}
+
+	/**
+	 * Get the list of time steps. <i>Note: Constructs a new list of new objects
+	 * for each call.</i>
+	 * 
+	 * @return the list of time steps
+	 * @since Apr 23, 2014
+	 */
+	public ImmutableList<BMDTimeStep> getTimeSteps()
+	{
+		validate();
+		return ImmutableList.copyOf(Lists.transform(m_Dates,
+				new Function<Long, BMDTimeStep>()
+				{
+					@Override
+					public BMDTimeStep apply(final Long p_TimeMS)
+					{
+						return new BMDTimeStep()
+						{
+							@Override
+							public int compareTo(final BMDTimeStep p_Other)
+							{
+								return Ints.compare(getIndex(),
+										p_Other.getIndex());
+							}
+
+							@Override
+							public int getIndex()
+							{
+								final int index = Collections.binarySearch(
+										m_Dates, p_TimeMS);
+								checkState(index >= 0,
+										"Error retrieving date index for %s",
+										p_TimeMS);
+								return index;
+							}
+
+							@Override
+							public long getTime()
+							{
+								return p_TimeMS;
+							}
+
+							@Override
+							public double getValue()
+							{
+								return m_Times.get(getIndex());
+							}
+						};
+					}
+
+				}));
 	}
 
 	/**
@@ -758,6 +853,7 @@ public class BMDReader
 	 */
 	public Float getVariableMax(final String p_VariableName)
 	{
+		validate();
 		try
 		{
 			return checkNotNull(m_MaxOverVars.get(checkNotNull(p_VariableName,
@@ -783,6 +879,7 @@ public class BMDReader
 	 */
 	public Float getVariableMin(final String p_VariableName)
 	{
+		validate();
 		try
 		{
 			return checkNotNull(m_MinOverVars.get(checkNotNull(p_VariableName,
@@ -796,14 +893,68 @@ public class BMDReader
 	}
 
 	/**
-	 * Get the list of variable names
+	 * Get the list of variables. <i>Note: Constructs a new list of new objects
+	 * for each call.</i>
 	 * 
-	 * @return the list of variable names
+	 * @return the list of variables
 	 * @since Apr 23, 2014
 	 */
-	public ImmutableList<String> getVariableNames()
+	public ImmutableList<BMDVariable> getVariables()
 	{
-		return ImmutableList.copyOf(m_VariableNames);
+		validate();
+		return ImmutableList.copyOf(Lists.transform(m_VariableNames,
+				new Function<String, BMDVariable>()
+				{
+					@Override
+					public BMDVariable apply(final String p_VariableName)
+					{
+						return new BMDVariable()
+						{
+							@Override
+							public int compareTo(final BMDVariable p_Other)
+							{
+								return Ints.compare(getIndex(),
+										p_Other.getIndex());
+							}
+
+							@Override
+							public int getIndex()
+							{
+								return m_VariableNamesIndex.get(p_VariableName);
+							}
+
+							@Override
+							public float getMax()
+							{
+								return m_MaxOverVars.get(p_VariableName);
+							}
+
+							@Override
+							public float getMin()
+							{
+								return m_MinOverVars.get(p_VariableName);
+							}
+
+							@Override
+							public String getName()
+							{
+								return p_VariableName;
+							}
+
+							@Override
+							public String getPCode()
+							{
+								return m_PCodes.get(getIndex());
+							}
+
+							@Override
+							public String getUnits()
+							{
+								return m_VariableUnits.get(p_VariableName);
+							}
+						};
+					}
+				}));
 	}
 
 	/**
@@ -822,6 +973,7 @@ public class BMDReader
 	public Float getVariableSegmentMax(final String p_VariableName,
 			final String p_SegmentName)
 	{
+		validate();
 		try
 		{
 			return checkNotNull(m_MaxOverVarSegs.get(
@@ -852,6 +1004,7 @@ public class BMDReader
 	public Float getVariableSegmentMin(final String p_VariableName,
 			final String p_SegmentName)
 	{
+		validate();
 		try
 		{
 			return checkNotNull(m_MinOverVarSegs.get(
@@ -874,6 +1027,7 @@ public class BMDReader
 	 */
 	public ImmutableMap<String, String> getVariableUnits()
 	{
+		validate();
 		return ImmutableMap.copyOf(m_VariableUnits);
 	}
 
@@ -885,26 +1039,27 @@ public class BMDReader
 	 */
 	public ConcentrationsQuery newConcentrationsQuery()
 	{
-		return new ConcentrationsQuery();
+		validate();
+		return new ConcentrationsQueryImpl();
 	}
 
 	/**
-	 * Reads the concentrations corresponding to the {@link ConcentrationsQuery}
-	 * into a table.
+	 * Reads the concentrations corresponding to the
+	 * {@link ConcentrationsQueryImpl} into a table.
 	 * 
 	 * @param p_Query
-	 *            the valid {@link ConcentrationsQuery}
+	 *            the valid {@link ConcentrationsQueryImpl}
 	 * @return the {@link Concentrations} for the provided
-	 *         {@link ConcentrationsQuery}
+	 *         {@link ConcentrationsQueryImpl}
 	 * @throws IOException
 	 * @since Apr 22, 2014
 	 */
-	private Concentrations readConcentrations(final ConcentrationsQuery p_Query)
-			throws IOException
+	private Concentrations readConcentrations(
+			final ConcentrationsQueryImpl p_Query) throws IOException
 	{
 		checkNotNull(p_Query, "Query cannot be null.");
 		p_Query.validate();
-		checkState(m_DIS != null, "Data input stream is not ready.");
+		validate();
 		m_DIS.seek((int) m_ConcentrationsLocation);
 
 		/**
@@ -1493,8 +1648,18 @@ public class BMDReader
 		catch (final Throwable t)
 		{
 			log.error("Error reading file.", t);
-			m_DIS.close();
-			m_DIS = null;
+			close();
 		}
+	}
+
+	/**
+	 * Validate the reader.
+	 * 
+	 * @throws IllegalStateException
+	 * @since Apr 22, 2014
+	 */
+	private void validate() throws IllegalStateException
+	{
+		checkState(m_DIS != null, "File is not open.");
 	}
 }
