@@ -83,6 +83,240 @@ import com.google.common.primitives.Ints;
 public class BMDReader
 {
 	/**
+	 * Implements {@link BMDSegment} including {@link #hashCode()} and
+	 * {@link #equals(Object)}
+	 * 
+	 * @author mckelvym
+	 * @since Apr 28, 2014
+	 * 
+	 */
+	private class BMDSegmentImpl implements BMDSegment
+	{
+		/**
+		 * The segment name
+		 * 
+		 * @since Apr 28, 2014
+		 */
+		private final String	m_SegmentName;
+
+		/**
+		 * Create a new instance for the provided segment name
+		 * 
+		 * @param p_SegmentName
+		 * @since Apr 28, 2014
+		 */
+		public BMDSegmentImpl(final String p_SegmentName)
+		{
+			m_SegmentName = p_SegmentName;
+		}
+
+		@Override
+		public int compareTo(final BMDSegment p_Other)
+		{
+			return Ints.compare(getIndex(), p_Other.getIndex());
+		}
+
+		@Override
+		public boolean equals(final Object p_Obj)
+		{
+			if (this == p_Obj)
+			{
+				return true;
+			}
+			if (!(p_Obj instanceof BMDSegment))
+			{
+				return false;
+			}
+			return getIndex() == BMDSegment.class.cast(p_Obj).getIndex();
+		}
+
+		@Override
+		public int getIndex()
+		{
+			return m_SegmentNamesIndex.get(m_SegmentName);
+		}
+
+		@Override
+		public String getName()
+		{
+			return m_SegmentName;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hashCode(getIndex());
+		}
+	}
+
+	/**
+	 * Implements {@link BMDTimeStep} including {@link #hashCode()} and
+	 * {@link #equals(Object)}
+	 * 
+	 * @author mckelvym
+	 * @since Apr 28, 2014
+	 * 
+	 */
+	private class BMDTimeStepImpl implements BMDTimeStep
+	{
+		/**
+		 * The time value in ms
+		 * 
+		 * @since Apr 28, 2014
+		 */
+		private final Long	m_TimeMS;
+
+		/**
+		 * Create a new instance for the provided time value in ms.
+		 * 
+		 * @param p_TimeMS
+		 * @since Apr 28, 2014
+		 */
+		public BMDTimeStepImpl(final Long p_TimeMS)
+		{
+			m_TimeMS = p_TimeMS;
+		}
+
+		@Override
+		public int compareTo(final BMDTimeStep p_Other)
+		{
+			return Ints.compare(getIndex(), p_Other.getIndex());
+		}
+
+		@Override
+		public boolean equals(final Object p_Obj)
+		{
+			if (this == p_Obj)
+			{
+				return true;
+			}
+			if (!(p_Obj instanceof BMDTimeStep))
+			{
+				return false;
+			}
+			return getIndex() == BMDTimeStep.class.cast(p_Obj).getIndex();
+		}
+
+		@Override
+		public int getIndex()
+		{
+			final int index = Collections.binarySearch(m_Dates, m_TimeMS);
+			checkState(index >= 0, "Error retrieving date index for %s",
+					m_TimeMS);
+			return index;
+		}
+
+		@Override
+		public long getTime()
+		{
+			return m_TimeMS;
+		}
+
+		@Override
+		public double getValue()
+		{
+			return m_Times.get(getIndex());
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hashCode(getIndex());
+		}
+	}
+
+	/**
+	 * Implements {@link BMDVariable} including {@link #hashCode()} and
+	 * {@link #equals(Object)}
+	 * 
+	 * @author mckelvym
+	 * @since Apr 28, 2014
+	 * 
+	 */
+	private class BMDVariableImpl implements BMDVariable
+	{
+		/**
+		 * The variable name
+		 * 
+		 * @since Apr 28, 2014
+		 */
+		private final String	m_VariableName;
+
+		/**
+		 * Create a new instance for the provided variable name.
+		 * 
+		 * @param p_VariableName
+		 * @since Apr 28, 2014
+		 */
+		public BMDVariableImpl(final String p_VariableName)
+		{
+			m_VariableName = p_VariableName;
+		}
+
+		@Override
+		public int compareTo(final BMDVariable p_Other)
+		{
+			return Ints.compare(getIndex(), p_Other.getIndex());
+		}
+
+		@Override
+		public boolean equals(final Object p_Obj)
+		{
+			if (this == p_Obj)
+			{
+				return true;
+			}
+			if (!(p_Obj instanceof BMDVariable))
+			{
+				return false;
+			}
+			return getIndex() == BMDVariable.class.cast(p_Obj).getIndex();
+		}
+
+		@Override
+		public int getIndex()
+		{
+			return m_VariableNamesIndex.get(m_VariableName);
+		}
+
+		@Override
+		public float getMax()
+		{
+			return m_MaxOverVars.get(m_VariableName);
+		}
+
+		@Override
+		public float getMin()
+		{
+			return m_MinOverVars.get(m_VariableName);
+		}
+
+		@Override
+		public String getName()
+		{
+			return m_VariableName;
+		}
+
+		@Override
+		public String getPCode()
+		{
+			return m_PCodes.get(getIndex());
+		}
+
+		@Override
+		public String getUnits()
+		{
+			return m_VariableUnits.get(m_VariableName);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hashCode(getIndex());
+		}
+	}
+
+	/**
 	 * Query class for getting concentrations data.
 	 * 
 	 * @author mckelvym
@@ -748,27 +982,7 @@ public class BMDReader
 					@Override
 					public BMDSegment apply(final String p_SegmentName)
 					{
-						return new BMDSegment()
-						{
-							@Override
-							public int compareTo(final BMDSegment p_Other)
-							{
-								return Ints.compare(getIndex(),
-										p_Other.getIndex());
-							}
-
-							@Override
-							public int getIndex()
-							{
-								return m_SegmentNamesIndex.get(p_SegmentName);
-							}
-
-							@Override
-							public String getName()
-							{
-								return p_SegmentName;
-							}
-						};
+						return new BMDSegmentImpl(p_SegmentName);
 					}
 				}));
 	}
@@ -803,40 +1017,8 @@ public class BMDReader
 					@Override
 					public BMDTimeStep apply(final Long p_TimeMS)
 					{
-						return new BMDTimeStep()
-						{
-							@Override
-							public int compareTo(final BMDTimeStep p_Other)
-							{
-								return Ints.compare(getIndex(),
-										p_Other.getIndex());
-							}
-
-							@Override
-							public int getIndex()
-							{
-								final int index = Collections.binarySearch(
-										m_Dates, p_TimeMS);
-								checkState(index >= 0,
-										"Error retrieving date index for %s",
-										p_TimeMS);
-								return index;
-							}
-
-							@Override
-							public long getTime()
-							{
-								return p_TimeMS;
-							}
-
-							@Override
-							public double getValue()
-							{
-								return m_Times.get(getIndex());
-							}
-						};
+						return new BMDTimeStepImpl(p_TimeMS);
 					}
-
 				}));
 	}
 
@@ -908,51 +1090,7 @@ public class BMDReader
 					@Override
 					public BMDVariable apply(final String p_VariableName)
 					{
-						return new BMDVariable()
-						{
-							@Override
-							public int compareTo(final BMDVariable p_Other)
-							{
-								return Ints.compare(getIndex(),
-										p_Other.getIndex());
-							}
-
-							@Override
-							public int getIndex()
-							{
-								return m_VariableNamesIndex.get(p_VariableName);
-							}
-
-							@Override
-							public float getMax()
-							{
-								return m_MaxOverVars.get(p_VariableName);
-							}
-
-							@Override
-							public float getMin()
-							{
-								return m_MinOverVars.get(p_VariableName);
-							}
-
-							@Override
-							public String getName()
-							{
-								return p_VariableName;
-							}
-
-							@Override
-							public String getPCode()
-							{
-								return m_PCodes.get(getIndex());
-							}
-
-							@Override
-							public String getUnits()
-							{
-								return m_VariableUnits.get(p_VariableName);
-							}
-						};
+						return new BMDVariableImpl(p_VariableName);
 					}
 				}));
 	}

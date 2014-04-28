@@ -4,9 +4,6 @@ package gov.usgs.jem.binarymodelingdata;
  * Represents a time step from a BMD file. Comparison is based on time index in
  * the file.
  * 
- * <i>Note:</i> {@code hashCode()} and {@code equals(Object)} are NOT
- * overridden.
- * 
  * @author mckelvym
  * @since Apr 24, 2014
  * 

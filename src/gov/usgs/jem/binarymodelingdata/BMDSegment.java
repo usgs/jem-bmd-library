@@ -4,9 +4,6 @@ package gov.usgs.jem.binarymodelingdata;
  * Represents a segment from a BMD file. Comparison is based on segment index in
  * the file, not its name.
  * 
- * <i>Note:</i> {@code hashCode()} and {@code equals(Object)} are NOT
- * overridden.
- * 
  * @author mckelvym
  * @since Apr 24, 2014
  * 
