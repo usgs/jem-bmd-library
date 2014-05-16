@@ -1,5 +1,8 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 
 import com.google.common.base.Objects;
@@ -15,58 +18,49 @@ import com.google.common.collect.ComparisonChain;
 final class ConcentrationImpl implements Concentration
 {
 	/**
-	 * @see #getSegmentName()
+	 * @see #getSegment()
 	 * @since Apr 23, 2014
 	 */
-	private final String	m_SegmentName;
-
-	/**
-	 * @see #getTime()
-	 * @since Apr 23, 2014
-	 */
-	private final double	m_Time;
+	private final BMDSegment	m_Segment;
 
 	/**
 	 * @see #getTimeStep()
 	 * @since Apr 23, 2014
 	 */
-	private final int		m_TimeStep;
+	private final BMDTimeStep	m_TimeStep;
 
 	/**
 	 * @see #getValue()
 	 * @since Apr 23, 2014
 	 */
-	private final float		m_Value;
+	private final float			m_Value;
 
 	/**
-	 * @see #getVariableName()
+	 * @see #getVariable()
 	 * @since Apr 23, 2014
 	 */
-	private final String	m_VariableName;
+	private final BMDVariable	m_Variable;
 
 	/**
 	 * Create a new instance for the provided parameters
 	 * 
-	 * @param p_VariableName
-	 *            variable name
-	 * @param p_SegmentName
-	 *            segment name
-	 * @param p_Time
-	 *            time value
+	 * @param p_Variable
+	 *            variable
+	 * @param p_Segment
+	 *            segment
 	 * @param p_TimeStep
-	 *            time index
+	 *            time step
 	 * @param p_Value
 	 *            concentration value
 	 * @since Apr 23, 2014
 	 */
-	public ConcentrationImpl(final String p_VariableName,
-			final String p_SegmentName, final double p_Time,
-			final int p_TimeStep, final float p_Value)
+	public ConcentrationImpl(final BMDVariable p_Variable,
+			final BMDSegment p_Segment, final BMDTimeStep p_TimeStep,
+			final float p_Value)
 	{
 		super();
-		m_VariableName = p_VariableName;
-		m_SegmentName = p_SegmentName;
-		m_Time = p_Time;
+		m_Variable = p_Variable;
+		m_Segment = p_Segment;
 		m_TimeStep = p_TimeStep;
 		m_Value = p_Value;
 	}
@@ -75,8 +69,8 @@ final class ConcentrationImpl implements Concentration
 	public int compareTo(final Concentration p_Other)
 	{
 		return ComparisonChain.start()
-				.compare(getVariableName(), p_Other.getVariableName())
-				.compare(getSegmentName(), p_Other.getSegmentName())
+				.compare(getVariable(), p_Other.getVariable())
+				.compare(getSegment(), p_Other.getSegment())
 				.compare(getTimeStep(), p_Other.getTimeStep()).result();
 	}
 
@@ -92,25 +86,19 @@ final class ConcentrationImpl implements Concentration
 			return false;
 		}
 		final Concentration o = Concentration.class.cast(p_Object);
-		return Objects.equal(getVariableName(), o.getVariableName())
-				&& Objects.equal(getSegmentName(), o.getSegmentName())
-				&& getTimeStep() == o.getTimeStep();
+		return Objects.equal(getVariable(), o.getVariable())
+				&& Objects.equal(getSegment(), o.getSegment())
+				&& Objects.equal(getTimeStep(), o.getTimeStep());
 	}
 
 	@Override
-	public String getSegmentName()
+	public BMDSegment getSegment()
 	{
-		return m_SegmentName;
+		return m_Segment;
 	}
 
 	@Override
-	public double getTime()
-	{
-		return m_Time;
-	}
-
-	@Override
-	public int getTimeStep()
+	public BMDTimeStep getTimeStep()
 	{
 		return m_TimeStep;
 	}
@@ -122,26 +110,21 @@ final class ConcentrationImpl implements Concentration
 	}
 
 	@Override
-	public String getVariableName()
+	public BMDVariable getVariable()
 	{
-		return m_VariableName;
+		return m_Variable;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hashCode(getVariableName(), getSegmentName(),
-				getTimeStep());
+		return Objects.hashCode(getVariable(), getSegment(), getTimeStep());
 	}
 
 	@Override
 	public String toString()
 	{
-		return Objects.toStringHelper(Concentration.class)
-				.add("variable", getVariableName())
-				.add("segment", getSegmentName())
-				.add("timeStep", getTimeStep()).add("time", getTime())
-				.add("value", getValue()).toString();
+		return String.valueOf(getValue());
 	}
 
 }

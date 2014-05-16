@@ -4,6 +4,7 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import gov.usgs.jem.binarymodelingdata.BMDHeader;
@@ -18,8 +19,6 @@ import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -32,14 +31,13 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Level;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
+import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -50,7 +48,6 @@ import com.google.common.collect.Table.Cell;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
-import com.google.common.primitives.Ints;
 
 /**
  * Reads WASP BMD output files. Based on clsBMD.vb @
@@ -83,240 +80,6 @@ import com.google.common.primitives.Ints;
 public class BMDReader
 {
 	/**
-	 * Implements {@link BMDSegment} including {@link #hashCode()} and
-	 * {@link #equals(Object)}
-	 * 
-	 * @author mckelvym
-	 * @since Apr 28, 2014
-	 * 
-	 */
-	private class BMDSegmentImpl implements BMDSegment
-	{
-		/**
-		 * The segment name
-		 * 
-		 * @since Apr 28, 2014
-		 */
-		private final String	m_SegmentName;
-
-		/**
-		 * Create a new instance for the provided segment name
-		 * 
-		 * @param p_SegmentName
-		 * @since Apr 28, 2014
-		 */
-		public BMDSegmentImpl(final String p_SegmentName)
-		{
-			m_SegmentName = p_SegmentName;
-		}
-
-		@Override
-		public int compareTo(final BMDSegment p_Other)
-		{
-			return Ints.compare(getIndex(), p_Other.getIndex());
-		}
-
-		@Override
-		public boolean equals(final Object p_Obj)
-		{
-			if (this == p_Obj)
-			{
-				return true;
-			}
-			if (!(p_Obj instanceof BMDSegment))
-			{
-				return false;
-			}
-			return getIndex() == BMDSegment.class.cast(p_Obj).getIndex();
-		}
-
-		@Override
-		public int getIndex()
-		{
-			return m_SegmentNamesIndex.get(m_SegmentName);
-		}
-
-		@Override
-		public String getName()
-		{
-			return m_SegmentName;
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return Objects.hashCode(getIndex());
-		}
-	}
-
-	/**
-	 * Implements {@link BMDTimeStep} including {@link #hashCode()} and
-	 * {@link #equals(Object)}
-	 * 
-	 * @author mckelvym
-	 * @since Apr 28, 2014
-	 * 
-	 */
-	private class BMDTimeStepImpl implements BMDTimeStep
-	{
-		/**
-		 * The time value in ms
-		 * 
-		 * @since Apr 28, 2014
-		 */
-		private final Long	m_TimeMS;
-
-		/**
-		 * Create a new instance for the provided time value in ms.
-		 * 
-		 * @param p_TimeMS
-		 * @since Apr 28, 2014
-		 */
-		public BMDTimeStepImpl(final Long p_TimeMS)
-		{
-			m_TimeMS = p_TimeMS;
-		}
-
-		@Override
-		public int compareTo(final BMDTimeStep p_Other)
-		{
-			return Ints.compare(getIndex(), p_Other.getIndex());
-		}
-
-		@Override
-		public boolean equals(final Object p_Obj)
-		{
-			if (this == p_Obj)
-			{
-				return true;
-			}
-			if (!(p_Obj instanceof BMDTimeStep))
-			{
-				return false;
-			}
-			return getIndex() == BMDTimeStep.class.cast(p_Obj).getIndex();
-		}
-
-		@Override
-		public int getIndex()
-		{
-			final int index = Collections.binarySearch(m_Dates, m_TimeMS);
-			checkState(index >= 0, "Error retrieving date index for %s",
-					m_TimeMS);
-			return index;
-		}
-
-		@Override
-		public long getTime()
-		{
-			return m_TimeMS;
-		}
-
-		@Override
-		public double getValue()
-		{
-			return m_Times.get(getIndex());
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return Objects.hashCode(getIndex());
-		}
-	}
-
-	/**
-	 * Implements {@link BMDVariable} including {@link #hashCode()} and
-	 * {@link #equals(Object)}
-	 * 
-	 * @author mckelvym
-	 * @since Apr 28, 2014
-	 * 
-	 */
-	private class BMDVariableImpl implements BMDVariable
-	{
-		/**
-		 * The variable name
-		 * 
-		 * @since Apr 28, 2014
-		 */
-		private final String	m_VariableName;
-
-		/**
-		 * Create a new instance for the provided variable name.
-		 * 
-		 * @param p_VariableName
-		 * @since Apr 28, 2014
-		 */
-		public BMDVariableImpl(final String p_VariableName)
-		{
-			m_VariableName = p_VariableName;
-		}
-
-		@Override
-		public int compareTo(final BMDVariable p_Other)
-		{
-			return Ints.compare(getIndex(), p_Other.getIndex());
-		}
-
-		@Override
-		public boolean equals(final Object p_Obj)
-		{
-			if (this == p_Obj)
-			{
-				return true;
-			}
-			if (!(p_Obj instanceof BMDVariable))
-			{
-				return false;
-			}
-			return getIndex() == BMDVariable.class.cast(p_Obj).getIndex();
-		}
-
-		@Override
-		public int getIndex()
-		{
-			return m_VariableNamesIndex.get(m_VariableName);
-		}
-
-		@Override
-		public float getMax()
-		{
-			return m_MaxOverVars.get(m_VariableName);
-		}
-
-		@Override
-		public float getMin()
-		{
-			return m_MinOverVars.get(m_VariableName);
-		}
-
-		@Override
-		public String getName()
-		{
-			return m_VariableName;
-		}
-
-		@Override
-		public String getPCode()
-		{
-			return m_PCodes.get(getIndex());
-		}
-
-		@Override
-		public String getUnits()
-		{
-			return m_VariableUnits.get(m_VariableName);
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return Objects.hashCode(getIndex());
-		}
-	}
-
-	/**
 	 * Query class for getting concentrations data.
 	 * 
 	 * @author mckelvym
@@ -331,7 +94,6 @@ public class BMDReader
 		 * @since Apr 22, 2014
 		 */
 		private final SortedSet<Integer>	m_qSegments;
-
 		/**
 		 * The indices into {@link BMDReader#m_Times} to query
 		 * 
@@ -393,60 +155,13 @@ public class BMDReader
 					&& m_qTimeSteps.contains(p_TimeIndex);
 		}
 
-		/**
-		 * Updates the query indices for matches within the reference list of
-		 * the to-add items. In other words, for every element in the to-add
-		 * array that is present in the reference list, the index of said item
-		 * in the reference list is added to the sorted set.
-		 * 
-		 * @param p_QParam
-		 *            the sorted set containing indices into the reference list
-		 * @param p_ReferenceList
-		 *            the reference list containing valid keys
-		 * @param p_ToAdd
-		 *            the items to add that must be present in the reference
-		 *            list
-		 * @since Apr 22, 2014
-		 */
-		private <T> void updateQIndices(final SortedSet<Integer> p_QParam,
-				final List<T> p_ReferenceList, final T... p_ToAdd)
+		@Override
+		public String toString()
 		{
-			for (final T elem : p_ToAdd)
-			{
-				final int index = p_ReferenceList.indexOf(elem);
-				if (index >= 0)
-				{
-					p_QParam.add(index);
-				}
-			}
-		}
-
-		/**
-		 * Updates the query indices for matches within the reference index map
-		 * of the to-add items. In other words, for every element in the to-add
-		 * array that is present (as a key) in the reference map, the index of
-		 * said item is added to the sorted set.
-		 * 
-		 * @param p_QParam
-		 *            the sorted set containing indices into the reference list
-		 * @param p_ReferenceIndex
-		 *            the reference index map containing valid keys
-		 * @param p_ToAdd
-		 *            the items to add that must be present in the reference
-		 *            list
-		 * @since Apr 22, 2014
-		 */
-		private <T> void updateQIndices(final SortedSet<Integer> p_QParam,
-				final Map<T, Integer> p_ReferenceIndex, final T... p_ToAdd)
-		{
-			for (final T elem : p_ToAdd)
-			{
-				final int index = p_ReferenceIndex.get(elem);
-				if (index >= 0)
-				{
-					p_QParam.add(index);
-				}
-			}
+			return Objects.toStringHelper(ConcentrationsQuery.class)
+					.add("numVars", m_qVariables.size())
+					.add("numSegs", m_qSegments.size())
+					.add("numTSteps", m_qTimeSteps.size()).toString();
 		}
 
 		/**
@@ -458,10 +173,23 @@ public class BMDReader
 		@Override
 		public void validate() throws IllegalStateException
 		{
-
 			checkState(!m_qVariables.isEmpty(), "No variables specified.");
+			checkElementIndex(m_qVariables.first(), m_Variables.size(),
+					"Invalid start variable index detected.");
+			checkElementIndex(m_qVariables.last(), m_Variables.size(),
+					"Invalid end variable index detected.");
+
 			checkState(!m_qSegments.isEmpty(), "No segments specified.");
+			checkElementIndex(m_qSegments.first(), m_Segments.size(),
+					"Invalid start segment index detected.");
+			checkElementIndex(m_qSegments.last(), m_Segments.size(),
+					"Invalid end segment index detected.");
+
 			checkState(!m_qTimeSteps.isEmpty(), "No timesteps specified.");
+			checkElementIndex(m_qTimeSteps.first(), m_TimeSteps.size(),
+					"Invalid start time index detected.");
+			checkElementIndex(m_qTimeSteps.last(), m_TimeSteps.size(),
+					"Invalid end time index detected.");
 		}
 
 		/**
@@ -475,7 +203,7 @@ public class BMDReader
 		{
 			m_qSegments.clear();
 			m_qSegments.addAll(ContiguousSet.create(
-					Range.closedOpen(0, m_SegmentNames.size()),
+					Range.closedOpen(0, m_Segments.size()),
 					DiscreteDomain.integers()).asList());
 			return this;
 		}
@@ -505,69 +233,44 @@ public class BMDReader
 		{
 			m_qVariables.clear();
 			m_qVariables.addAll(ContiguousSet.create(
-					Range.closedOpen(0, m_VariableNames.size()),
+					Range.closedOpen(0, m_Variables.size()),
 					DiscreteDomain.integers()).asList());
 			return this;
 		}
 
-		/**
-		 * Add the pcodes (which are an alias for variable names) to the query.
-		 * 
-		 * @param p_PCodes
-		 *            the pcodes to add to the query
-		 * @return this
-		 * @since Apr 22, 2014
-		 */
 		@Override
-		public ConcentrationsQuery withPCodes(final String... p_PCodes)
+		public ConcentrationsQuery withSegments(
+				final List<BMDSegment> p_Segments)
 		{
-			updateQIndices(m_qVariables, m_PCodes, p_PCodes);
+			checkNotNull(p_Segments, "Invalid argument.");
+			for (final BMDSegment segment : p_Segments)
+			{
+				m_qSegments.add(segment.getIndex());
+			}
 			return this;
 		}
 
-		/**
-		 * Add the segment names to the query.
-		 * 
-		 * @param p_SegmentNames
-		 *            the name of segments to add to the query
-		 * @return this
-		 * @since Apr 22, 2014
-		 */
 		@Override
-		public ConcentrationsQuery withSegments(final String... p_SegmentNames)
+		public ConcentrationsQuery withTimeSteps(
+				final List<BMDTimeStep> p_TimeSteps)
 		{
-			updateQIndices(m_qSegments, m_SegmentNamesIndex, p_SegmentNames);
+			checkNotNull(p_TimeSteps, "Invalid argument.");
+			for (final BMDTimeStep timeStep : p_TimeSteps)
+			{
+				m_qTimeSteps.add(timeStep.getIndex());
+			}
 			return this;
 		}
 
-		/**
-		 * Add the time steps to the query.
-		 * 
-		 * @param p_TimeSteps
-		 *            the time steps to add to the query
-		 * @return this
-		 * @since Apr 22, 2014
-		 */
-		@Override
-		public ConcentrationsQuery withTimeSteps(final Integer... p_TimeSteps)
-		{
-			updateQIndices(m_qTimeSteps, getTimeStepIndices(), p_TimeSteps);
-			return this;
-		}
-
-		/**
-		 * Add the variable names to the query.
-		 * 
-		 * @param p_VariableNames
-		 *            the name of variables to add to the query
-		 * @return this
-		 * @since Apr 22, 2014
-		 */
 		@Override
 		public ConcentrationsQuery withVariables(
-				final String... p_VariableNames)
+				final List<BMDVariable> p_Variables)
 		{
-			updateQIndices(m_qVariables, m_VariableNamesIndex, p_VariableNames);
+			checkNotNull(p_Variables, "Invalid argument.");
+			for (final BMDVariable variable : p_Variables)
+			{
+				m_qVariables.add(variable.getIndex());
+			}
 			return this;
 		}
 	}
@@ -718,12 +421,6 @@ public class BMDReader
 	private long								m_ConcentrationsLocation;
 
 	/**
-	 * @see #getDates()
-	 * @since Apr 23, 2014
-	 */
-	private final List<Long>					m_Dates;
-
-	/**
 	 * The data input stream used to read from the file.
 	 * 
 	 * @since Apr 22, 2014
@@ -797,33 +494,10 @@ public class BMDReader
 	private final Table<String, String, Float>	m_MinOverVarSegs;
 
 	/**
-	 * Same size as {@link #m_VariableNames} but strings are modified slightly
-	 * so that "Volume (m3)" becomes "VOLUME"
-	 * 
-	 * @see #getPCodes()
-	 * @since Apr 22, 2014
-	 */
-	private final List<String>					m_PCodes;
-
-	/**
 	 * @see #getSeedDate()
 	 * @since Apr 18, 2014
 	 */
 	private Date								m_SeedDate;
-
-	/**
-	 * @see #getSegmentNames()
-	 * @since Apr 18, 2014
-	 */
-	private final List<String>					m_SegmentNames;
-
-	/**
-	 * Used so that {@link #m_SegmentNames} {@link List#indexOf(Object)}
-	 * operations are cheaper
-	 * 
-	 * @since Apr 23, 2014
-	 */
-	private final Map<String, Integer>			m_SegmentNamesIndex;
 
 	/**
 	 * Computed after the size of the dimensions are known. This is the number
@@ -834,10 +508,10 @@ public class BMDReader
 	private long								m_SegmentNamesLocation;
 
 	/**
-	 * @see #getTimes()
+	 * @see #getSegments()
 	 * @since Apr 18, 2014
 	 */
-	private final List<Double>					m_Times;
+	private final List<BMDSegment>				m_Segments;
 
 	/**
 	 * Computed after the size of the dimensions are known. This is the number
@@ -848,26 +522,16 @@ public class BMDReader
 	private long								m_TimesLocation;
 
 	/**
-	 * @see #getVariableNames()
+	 * @see #getTimeSteps()
 	 * @since Apr 18, 2014
 	 */
-	private final List<String>					m_VariableNames;
+	private final List<BMDTimeStep>				m_TimeSteps;
 
 	/**
-	 * Used so that {@link #m_VariableNames} {@link List#indexOf(Object)}
-	 * operations are cheaper
-	 * 
-	 * @since Apr 23, 2014
-	 */
-	private final Map<String, Integer>			m_VariableNamesIndex;
-
-	/**
-	 * Mapping of variable name to variable units
-	 * 
-	 * @see #getVariableUnits()
+	 * @see #getVariables()
 	 * @since Apr 18, 2014
 	 */
-	private final Map<String, String>			m_VariableUnits;
+	private final List<BMDVariable>				m_Variables;
 
 	/**
 	 * Create a new reader for the BMD file at the provided path
@@ -879,14 +543,9 @@ public class BMDReader
 	private BMDReader(final String p_FilePath)
 	{
 		m_FilePath = checkNotNull(p_FilePath);
-		m_VariableNames = Lists.newArrayList();
-		m_VariableNamesIndex = Maps.newHashMap();
-		m_PCodes = Lists.newArrayList();
-		m_VariableUnits = Maps.newHashMap();
-		m_SegmentNames = Lists.newArrayList();
-		m_SegmentNamesIndex = Maps.newHashMap();
-		m_Times = Lists.newArrayList();
-		m_Dates = Lists.newArrayList();
+		m_Variables = Lists.newArrayList();
+		m_Segments = Lists.newArrayList();
+		m_TimeSteps = Lists.newArrayList();
 		m_MinOverVars = Maps.newHashMap();
 		m_MaxOverVars = Maps.newHashMap();
 		m_MinOverVarSegs = HashBasedTable.create();
@@ -941,20 +600,6 @@ public class BMDReader
 	}
 
 	/**
-	 * Get the list of PCodes. These are essentially aliases for the variable
-	 * names, so this list is the same size as the one retrieved from
-	 * {@link #getVariableNames()}
-	 * 
-	 * @return the list of PCodes
-	 * @since Apr 23, 2014
-	 */
-	public ImmutableList<String> getPCodes()
-	{
-		validate();
-		return ImmutableList.copyOf(m_PCodes);
-	}
-
-	/**
 	 * Get the seed date
 	 * 
 	 * @return the seed date
@@ -976,15 +621,7 @@ public class BMDReader
 	public ImmutableList<BMDSegment> getSegments()
 	{
 		validate();
-		return ImmutableList.copyOf(Lists.transform(m_SegmentNames,
-				new Function<String, BMDSegment>()
-				{
-					@Override
-					public BMDSegment apply(final String p_SegmentName)
-					{
-						return new BMDSegmentImpl(p_SegmentName);
-					}
-				}));
+		return ImmutableList.copyOf(m_Segments);
 	}
 
 	/**
@@ -997,7 +634,7 @@ public class BMDReader
 	private ImmutableList<Integer> getTimeStepIndices()
 	{
 		validate();
-		return ContiguousSet.create(Range.closedOpen(0, m_Times.size()),
+		return ContiguousSet.create(Range.closedOpen(0, m_TimeSteps.size()),
 				DiscreteDomain.integers()).asList();
 	}
 
@@ -1011,15 +648,7 @@ public class BMDReader
 	public ImmutableList<BMDTimeStep> getTimeSteps()
 	{
 		validate();
-		return ImmutableList.copyOf(Lists.transform(m_Dates,
-				new Function<Long, BMDTimeStep>()
-				{
-					@Override
-					public BMDTimeStep apply(final Long p_TimeMS)
-					{
-						return new BMDTimeStepImpl(p_TimeMS);
-					}
-				}));
+		return ImmutableList.copyOf(m_TimeSteps);
 	}
 
 	/**
@@ -1084,15 +713,7 @@ public class BMDReader
 	public ImmutableList<BMDVariable> getVariables()
 	{
 		validate();
-		return ImmutableList.copyOf(Lists.transform(m_VariableNames,
-				new Function<String, BMDVariable>()
-				{
-					@Override
-					public BMDVariable apply(final String p_VariableName)
-					{
-						return new BMDVariableImpl(p_VariableName);
-					}
-				}));
+		return ImmutableList.copyOf(m_Variables);
 	}
 
 	/**
@@ -1158,18 +779,6 @@ public class BMDReader
 	}
 
 	/**
-	 * Get the variable units (mapping of variable name -> units)
-	 * 
-	 * @return the variable units (mapping of variable name -> units)
-	 * @since Apr 23, 2014
-	 */
-	public ImmutableMap<String, String> getVariableUnits()
-	{
-		validate();
-		return ImmutableMap.copyOf(m_VariableUnits);
-	}
-
-	/**
 	 * Construct a new query for concentrations.
 	 * 
 	 * @return
@@ -1204,30 +813,12 @@ public class BMDReader
 		 * Number of bytes in a float (4)
 		 */
 		final int FBYTES = Float.SIZE / 8;
-		final Comparator<String> variableComparator = new Comparator<String>()
-		{
-			@Override
-			public int compare(final String p_o1, final String p_o2)
-			{
-				return Ints.compare(m_VariableNamesIndex.get(p_o1),
-						m_VariableNamesIndex.get(p_o2));
-			}
-		};
-		final Comparator<String> segmentComparator = new Comparator<String>()
-		{
-			@Override
-			public int compare(final String p_o1, final String p_o2)
-			{
-				return Ints.compare(m_SegmentNamesIndex.get(p_o1),
-						m_SegmentNamesIndex.get(p_o2));
-			}
-		};
 		/**
 		 * Table mapping (variable name, segment name) -> sorted map of (time
 		 * step -> value)
 		 */
-		final Table<String, String, SortedMap<Integer, Float>> results = TreeBasedTable
-				.create(variableComparator, segmentComparator);
+		final Table<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>> results = TreeBasedTable
+				.create();
 		/**
 		 * We can either calculate the skip from the current seek, or just keep
 		 * a tally of bytes to skip.
@@ -1259,20 +850,19 @@ public class BMDReader
 						 */
 						skipBytes = 0;
 
-						final String variableName = m_VariableNames
+						final BMDVariable variable = m_Variables
 								.get(variableNum);
-						final String segmentName = m_SegmentNames
-								.get(segmentNum);
+						final BMDSegment segment = m_Segments.get(segmentNum);
+						final BMDTimeStep timeStep = m_TimeSteps.get(timeNum);
 						final float value = m_DIS.readFloat();
-						if (!results.contains(variableName, segmentName))
+						if (!results.contains(variable, segment))
 						{
-							final SortedMap<Integer, Float> timeValues = Maps
+							final SortedMap<BMDTimeStep, Float> timeValues = Maps
 									.newTreeMap();
-							results.put(variableName, segmentName, timeValues);
+							results.put(variable, segment, timeValues);
 						}
 
-						results.get(variableName, segmentName).put(timeNum,
-								value);
+						results.get(variable, segment).put(timeStep, value);
 					}
 					else
 					{
@@ -1285,55 +875,73 @@ public class BMDReader
 			}
 		}
 
-		final List<String> tmpVariables = Lists.newArrayList(m_VariableNames);
-		final List<String> tmpSegments = Lists.newArrayList(m_SegmentNames);
-		final List<Integer> tmpTimeSteps = Lists
-				.newArrayList(getTimeStepIndices());
+		final ImmutableList<BMDVariable> variables = ImmutableList
+				.copyOf(Iterables.filter(m_Variables,
+						new Predicate<BMDVariable>()
+						{
 
-		tmpVariables.retainAll(results.rowKeySet());
-		tmpSegments.retainAll(results.columnKeySet());
-		tmpTimeSteps.retainAll(p_Query.m_qTimeSteps);
+							@Override
+							public boolean apply(final BMDVariable p_Input)
+							{
+								return results.containsRow(p_Input);
+							}
+						}));
+		final ImmutableList<BMDSegment> segments = ImmutableList
+				.copyOf(Iterables.filter(m_Segments,
+						new Predicate<BMDSegment>()
+						{
 
-		final ImmutableList<String> variables = ImmutableList
-				.copyOf(tmpVariables);
-		final ImmutableList<String> segments = ImmutableList
-				.copyOf(tmpSegments);
-		final ImmutableList<Integer> timeSteps = ImmutableList
-				.copyOf(tmpTimeSteps);
+							@Override
+							public boolean apply(final BMDSegment p_Input)
+							{
+								return results.containsColumn(p_Input);
+							}
+						}));
+		final ImmutableList<BMDTimeStep> timeSteps = ImmutableList
+				.copyOf(Iterables.filter(m_TimeSteps,
+						new Predicate<BMDTimeStep>()
+						{
+
+							@Override
+							public boolean apply(final BMDTimeStep p_Input)
+							{
+								return p_Query.m_qTimeSteps.contains(p_Input
+										.getIndex());
+							}
+						}));
 
 		return new Concentrations()
 		{
 			@Override
-			public Concentration get(final String p_VariableName,
-					final String p_SegmentName, final int p_TimeStep)
+			public Concentration get(final BMDVariable p_Variable,
+					final BMDSegment p_Segment, final BMDTimeStep p_TimeStep)
 			{
-				checkArgument(results.contains(p_VariableName, p_SegmentName),
+				checkArgument(results.contains(p_Variable, p_Segment),
 						"Invalid variable (%s) or segment (%s) name.",
-						p_VariableName, p_SegmentName);
-				final SortedMap<Integer, Float> timeMap = results.get(
-						p_VariableName, p_SegmentName);
+						p_Variable, p_Segment);
+				final SortedMap<BMDTimeStep, Float> timeMap = results.get(
+						p_Variable, p_Segment);
 				checkArgument(timeMap.containsKey(p_TimeStep),
 						"Invalid time step: %s", p_TimeStep);
-				final Double time = m_Times.get(p_TimeStep);
 				final Float value = timeMap.get(p_TimeStep);
-				return new ConcentrationImpl(p_VariableName, p_SegmentName,
-						time, p_TimeStep, value);
+				return new ConcentrationImpl(p_Variable, p_Segment, p_TimeStep,
+						value);
 			}
 
 			@Override
-			public List<String> getSegments()
+			public ImmutableList<BMDSegment> getSegments()
 			{
 				return segments;
 			}
 
 			@Override
-			public List<Integer> getTimeSteps()
+			public ImmutableList<BMDTimeStep> getTimeSteps()
 			{
 				return timeSteps;
 			}
 
 			@Override
-			public List<String> getVariables()
+			public ImmutableList<BMDVariable> getVariables()
 			{
 				return variables;
 			}
@@ -1349,23 +957,23 @@ public class BMDReader
 					 * 
 					 * @since Apr 23, 2014
 					 */
-					Cell<String, String, SortedMap<Integer, Float>>					m_Cell			= null;
+					Cell<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>>					m_Cell			= null;
 
 					/**
 					 * Iterates the variables and segments
 					 * 
 					 * @since Apr 23, 2014
 					 */
-					final Iterator<Cell<String, String, SortedMap<Integer, Float>>>	m_CellIterator	= results
-																											.cellSet()
-																											.iterator();
+					final Iterator<Cell<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>>>	m_CellIterator	= results
+																															.cellSet()
+																															.iterator();
 
 					/**
 					 * Time steps and values iterator
 					 * 
 					 * @since Apr 23, 2014
 					 */
-					Iterator<Entry<Integer, Float>>									m_TimeIterator	= null;
+					Iterator<Entry<BMDTimeStep, Float>>												m_TimeIterator	= null;
 
 					@Override
 					public boolean hasNext()
@@ -1389,13 +997,12 @@ public class BMDReader
 									.iterator();
 						}
 
-						final Entry<Integer, Float> nextEntry = m_TimeIterator
+						final Entry<BMDTimeStep, Float> nextEntry = m_TimeIterator
 								.next();
-						final Integer p_TimeStep = nextEntry.getKey();
-						final Double time = m_Times.get(p_TimeStep);
+						final BMDTimeStep p_TimeStep = nextEntry.getKey();
 						final Float value = nextEntry.getValue();
 						return new ConcentrationImpl(m_Cell.getRowKey(),
-								m_Cell.getColumnKey(), time, p_TimeStep, value);
+								m_Cell.getColumnKey(), p_TimeStep, value);
 					}
 				};
 			}
@@ -1523,6 +1130,7 @@ public class BMDReader
 			dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 			log.debug(String.format("Seed Date: %s",
 					dateFormatUTC.format(m_SeedDate)));
+
 			/**
 			 * Read variable names and units
 			 */
@@ -1536,9 +1144,9 @@ public class BMDReader
 						.toUpperCase();
 				pCode = pCode.substring(0, Math.min(10, pCode.length()));
 
-				m_VariableNames.add(variableName);
-				m_VariableUnits.put(variableName, variableUnits);
-				m_PCodes.add(pCode);
+				final BMDVariableImpl variable = new BMDVariableImpl(
+						variableNum, variableName, variableUnits, pCode);
+				m_Variables.add(variable);
 				log.debug(String.format(
 						"Variable #%s: '%s';\tPCode: '%s'\tUnits: '%s'",
 						variableNum + 1, variableName, pCode, variableUnits));
@@ -1580,7 +1188,8 @@ public class BMDReader
 			 */
 			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
 			{
-				final String variableName = m_VariableNames.get(variableNum);
+				final String variableName = m_Variables.get(variableNum)
+						.getName();
 				final float min = m_DIS.readFloat();
 				final float max = m_DIS.readFloat();
 				m_MinOverVars.put(variableName, min);
@@ -1595,7 +1204,8 @@ public class BMDReader
 			final Map<String, List<Float>> maxOverVarSegs = Maps.newHashMap();
 			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
 			{
-				final String variableName = m_VariableNames.get(variableNum);
+				final String variableName = m_Variables.get(variableNum)
+						.getName();
 				final List<Float> minOverSegs = Lists.newArrayList();
 				final List<Float> maxOverSegs = Lists.newArrayList();
 				for (int segmentNum = 0; segmentNum < m_Header
@@ -1622,7 +1232,9 @@ public class BMDReader
 					final String segmentName = new String(
 							m_DIS.readCharsAsAscii(SEGMENT_NAME_SIZE)).trim();
 
-					m_SegmentNames.add(segmentName);
+					final BMDSegmentImpl segment = new BMDSegmentImpl(
+							segmentNum, segmentName);
+					m_Segments.add(segment);
 					log.debug(String.format("Segment #%s: '%s'",
 							segmentNum + 1, segmentName));
 				}
@@ -1637,7 +1249,9 @@ public class BMDReader
 					final String segmentName = String.format("Segment %s",
 							segmentNum);
 
-					m_SegmentNames.add(segmentName);
+					final BMDSegmentImpl segment = new BMDSegmentImpl(
+							segmentNum, segmentName);
+					m_Segments.add(segment);
 					log.debug(String.format("Segment #%s: '%s'",
 							segmentNum + 1, segmentName));
 				}
@@ -1654,21 +1268,21 @@ public class BMDReader
 			 */
 			int kMax = 0;
 			int lastJ = Integer.MAX_VALUE;
-			if (!m_SegmentNames.isEmpty())
+			if (!m_Segments.isEmpty())
 			{
 				final Splitter splitter = Splitter.on("=");
-				List<String> splitToList = splitter.splitToList(m_SegmentNames
-						.get(0));
+				List<String> splitToList = splitter.splitToList(m_Segments.get(
+						0).getName());
 				boolean doFormat = splitToList.size() >= 2
 						&& splitToList.size() <= 3;
 				if (doFormat)
 				{
-					for (final String segmentName : m_SegmentNames)
+					for (final BMDSegment segment : m_Segments)
 					{
 						/**
 						 * This is carried over from original source.
 						 */
-						splitToList = splitter.splitToList(segmentName);
+						splitToList = splitter.splitToList(segment.getName());
 						doFormat = splitToList.size() >= 2
 								&& splitToList.size() <= 3;
 						if (!doFormat)
@@ -1677,7 +1291,7 @@ public class BMDReader
 						}
 						// int i = Integer.valueOf(segmentName.substring(2,
 						// 2+3));
-						final Integer j = Integer.valueOf(segmentName
+						final Integer j = Integer.valueOf(segment.getName()
 								.substring(8, 8 + 3));
 						if (j < lastJ)
 						{
@@ -1691,8 +1305,8 @@ public class BMDReader
 					for (int segmentNum = 0; segmentNum < m_Header
 							.getSegmentsSize(); segmentNum++)
 					{
-						final String segmentName = m_SegmentNames
-								.get(segmentNum);
+						final String segmentName = m_Segments.get(segmentNum)
+								.getName();
 						/**
 						 * This is carried over from original source.
 						 */
@@ -1711,10 +1325,11 @@ public class BMDReader
 						{
 							k--;
 							lastJ = j;
-							m_SegmentNames
-									.set(segmentNum,
-											String.format("I=%03dJ=%03dK=%03d",
-													i, j, k).trim());
+							m_Segments.set(
+									segmentNum,
+									new BMDSegmentImpl(segmentNum, String
+											.format("I=%03dJ=%03dK=%03d", i, j,
+													k).trim()));
 						}
 					}
 				}
@@ -1725,11 +1340,13 @@ public class BMDReader
 			 */
 			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
 			{
-				final String variableName = m_VariableNames.get(variableNum);
+				final String variableName = m_Variables.get(variableNum)
+						.getName();
 				for (int segmentNum = 0; segmentNum < m_Header
 						.getSegmentsSize(); segmentNum++)
 				{
-					final String segmentName = m_SegmentNames.get(segmentNum);
+					final String segmentName = m_Segments.get(segmentNum)
+							.getName();
 					final Float minVarSeg = minOverVarSegs.get(variableName)
 							.get(segmentNum);
 					final Float maxVarSeg = maxOverVarSegs.get(variableName)
@@ -1743,45 +1360,37 @@ public class BMDReader
 			 * Read times
 			 */
 			m_DIS.seek((int) m_TimesLocation);
+			final List<Double> rawTimes = Lists.newArrayList();
 			for (int timeNum = 0; timeNum < m_Header.getTimesSize(); timeNum++)
 			{
 				final double t = m_DIS.readDouble();
-				m_Times.add(t);
+				rawTimes.add(t);
 
 			}
 			log.debug(String.format("Times: %s",
-					Arrays.toString(abbreviate(m_Times.toArray()))));
+					Arrays.toString(abbreviate(rawTimes.toArray()))));
 
 			/**
 			 * Calculate and store the "dates"
 			 */
 			final int secsPerDay = 60 * 60 * 24;
-			for (final Double timeValue : m_Times)
+			for (int timeNum = 0; timeNum < rawTimes.size(); timeNum++)
 			{
+				final double timeValue = rawTimes.get(timeNum);
 				cal.setTime(m_SeedDate);
 				final int addSecs = (int) Math.round(secsPerDay * timeValue);
 				cal.add(Calendar.SECOND, addSecs);
 				final long time = cal.getTime().getTime();
-				m_Dates.add(time);
+
+				final BMDTimeStepImpl timeStep = new BMDTimeStepImpl(timeNum,
+						time, timeValue);
+				m_TimeSteps.add(timeStep);
 			}
 			log.debug(String.format("Dates (first, last): (%s, %s)",
-					dateFormatUTC.format(new Date(Iterables.getFirst(m_Dates,
-							0l))), dateFormatUTC.format(new Date(Iterables
-							.getLast(m_Dates)))));
-
-			/**
-			 * Create variable and segment name indexes
-			 */
-			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
-			{
-				final String variableName = m_VariableNames.get(variableNum);
-				m_VariableNamesIndex.put(variableName, variableNum);
-			}
-			for (int segmentNum = 0; segmentNum < m_Header.getSegmentsSize(); segmentNum++)
-			{
-				final String segmentName = m_SegmentNames.get(segmentNum);
-				m_SegmentNamesIndex.put(segmentName, segmentNum);
-			}
+					dateFormatUTC
+							.format(new Date(m_TimeSteps.get(0).getTime())),
+					dateFormatUTC.format(new Date(Iterables
+							.getLast(m_TimeSteps).getTime()))));
 		}
 		catch (final Throwable t)
 		{

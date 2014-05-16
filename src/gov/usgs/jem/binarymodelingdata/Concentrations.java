@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Container for a collection of {@link Concentration}.
@@ -14,10 +14,10 @@ public interface Concentrations extends Iterable<Concentration>
 	/**
 	 * Retrieve a particular entry.
 	 * 
-	 * @param p_VariableName
-	 *            the variable name
-	 * @param p_SegmentName
-	 *            the segment name
+	 * @param p_Variable
+	 *            the variable
+	 * @param p_Segment
+	 *            the segment
 	 * @param p_TimeStep
 	 *            the time step
 	 * @return the {@link Concentration}
@@ -25,16 +25,16 @@ public interface Concentrations extends Iterable<Concentration>
 	 *        given variable, segment, or time step.
 	 * @since Apr 23, 2014
 	 */
-	Concentration get(String p_VariableName, String p_SegmentName,
-			int p_TimeStep);
+	Concentration get(BMDVariable p_Variable, BMDSegment p_Segment,
+			BMDTimeStep p_TimeStep);
 
 	/**
-	 * Get the segment names in this container
+	 * Get the segments in this container
 	 * 
-	 * @return the segment names in this container
+	 * @return the segments in this container
 	 * @since Apr 23, 2014
 	 */
-	List<String> getSegments();
+	ImmutableList<BMDSegment> getSegments();
 
 	/**
 	 * Get the time steps in this container
@@ -42,13 +42,13 @@ public interface Concentrations extends Iterable<Concentration>
 	 * @return the time steps in this container
 	 * @since Apr 23, 2014
 	 */
-	List<Integer> getTimeSteps();
+	ImmutableList<BMDTimeStep> getTimeSteps();
 
 	/**
-	 * Get the variable names in this container
+	 * Get the variables in this container
 	 * 
-	 * @return the variable names in this container
+	 * @return the variables in this container
 	 * @since Apr 23, 2014
 	 */
-	List<String> getVariables();
+	ImmutableList<BMDVariable> getVariables();
 }

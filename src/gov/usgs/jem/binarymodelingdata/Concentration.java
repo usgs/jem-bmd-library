@@ -10,30 +10,21 @@ package gov.usgs.jem.binarymodelingdata;
  */
 public interface Concentration extends Comparable<Concentration>
 {
-
 	/**
-	 * Get the segment name
+	 * Get the segment
 	 * 
-	 * @return the segment name
+	 * @return the {@link BMDSegment}
 	 * @since Apr 23, 2014
 	 */
-	String getSegmentName();
+	BMDSegment getSegment();
 
 	/**
-	 * Get the time value
+	 * Get the time step
 	 * 
-	 * @return the time value
+	 * @return the {@link BMDTimeStep}
 	 * @since Apr 23, 2014
 	 */
-	double getTime();
-
-	/**
-	 * Get the time index
-	 * 
-	 * @return the time index
-	 * @since Apr 23, 2014
-	 */
-	int getTimeStep();
+	BMDTimeStep getTimeStep();
 
 	/**
 	 * Get the concentration value
@@ -44,11 +35,11 @@ public interface Concentration extends Comparable<Concentration>
 	float getValue();
 
 	/**
-	 * Get the variable name
+	 * Get the variable
 	 * 
-	 * @return the variable name
+	 * @return the {@link BMDVariable}
 	 * @since Apr 23, 2014
 	 */
-	String getVariableName();
+	BMDVariable getVariable();
 
 }

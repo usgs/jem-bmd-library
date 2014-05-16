@@ -1,8 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Query class for getting concentrations data. See
@@ -58,43 +62,33 @@ public interface ConcentrationsQuery
 	ConcentrationsQuery withAllVariables();
 
 	/**
-	 * Add the pcodes (which are an alias for variable names) to the query.
-	 * 
-	 * @param p_PCodes
-	 *            the pcodes to add to the query
-	 * @return this
-	 * @since Apr 22, 2014
-	 */
-	ConcentrationsQuery withPCodes(String... p_PCodes);
-
-	/**
-	 * Add the segment names to the query.
+	 * Add the segments to the query.
 	 * 
 	 * @param p_SegmentNames
-	 *            the name of segments to add to the query
+	 *            the {@link BMDSegment}(s) to add to the query
 	 * @return this
-	 * @since Apr 22, 2014
+	 * @since May 16, 2014
 	 */
-	ConcentrationsQuery withSegments(String... p_SegmentNames);
+	ConcentrationsQuery withSegments(List<BMDSegment> p_Segments);
 
 	/**
 	 * Add the time steps to the query.
 	 * 
 	 * @param p_TimeSteps
-	 *            the time steps to add to the query
+	 *            the {@link BMDTimeStep}(s) to add to the query
 	 * @return this
-	 * @since Apr 22, 2014
+	 * @since May 16, 2014
 	 */
-	ConcentrationsQuery withTimeSteps(Integer... p_TimeSteps);
+	ConcentrationsQuery withTimeSteps(List<BMDTimeStep> p_TimeSteps);
 
 	/**
-	 * Add the variable names to the query.
+	 * /** Add the variables to the query.
 	 * 
-	 * @param p_VariableNames
-	 *            the name of variables to add to the query
+	 * @param p_Variables
+	 *            the {@link BMDVariable}(s) to add to the query
 	 * @return this
-	 * @since Apr 22, 2014
+	 * @since May 16, 2014
 	 */
-	ConcentrationsQuery withVariables(String... p_VariableNames);
+	ConcentrationsQuery withVariables(List<BMDVariable> p_Variables);
 
 }

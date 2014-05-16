@@ -19,26 +19,6 @@ public interface BMDVariable extends Comparable<BMDVariable>
 	int getIndex();
 
 	/**
-	 * Get the maximum value for this variable as retrieved from the file (not
-	 * calculated).
-	 * 
-	 * @return the maximum value for this variable as retrieved from the file
-	 *         (not calculated).
-	 * @since Apr 24, 2014
-	 */
-	float getMax();
-
-	/**
-	 * Get the minimum value for this variable as retrieved from the file (not
-	 * calculated).
-	 * 
-	 * @return the minimum value for this variable as retrieved from the file
-	 *         (not calculated).
-	 * @since Apr 24, 2014
-	 */
-	float getMin();
-
-	/**
 	 * Get the variable name, as it was retrieved from the file. The file limits
 	 * the name to 18 characters.
 	 * 
