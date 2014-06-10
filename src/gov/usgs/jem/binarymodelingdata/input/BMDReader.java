@@ -1142,7 +1142,7 @@ public class BMDReader
 						m_DIS.readCharsAsAscii(VARIABLE_UNIT_SIZE)).trim();
 				String pCode = variableName.replaceFirst("\\(.*", "").trim()
 						.toUpperCase();
-				pCode = pCode.substring(0, Math.min(10, pCode.length()));
+				pCode = pCode.substring(0, Math.min(10, pCode.length())).trim();
 
 				final BMDVariableImpl variable = new BMDVariableImpl(
 						variableNum, variableName, variableUnits, pCode);
