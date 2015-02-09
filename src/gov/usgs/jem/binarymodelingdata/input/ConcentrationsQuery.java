@@ -8,13 +8,15 @@ import gov.usgs.jem.binarymodelingdata.Concentrations;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * Query class for getting concentrations data. See
  * {@link BMDReader#newConcentrationsQuery()}
- * 
+ *
  * @author mckelvym
  * @since Apr 25, 2014
- * 
+ *
  */
 public interface ConcentrationsQuery
 {
@@ -22,7 +24,7 @@ public interface ConcentrationsQuery
 	/**
 	 * Executes the query and returns the results as a {@link Concentrations}
 	 * collection
-	 * 
+	 *
 	 * @return the results of the query.
 	 * @throws IOException
 	 * @since Apr 22, 2014
@@ -31,7 +33,7 @@ public interface ConcentrationsQuery
 
 	/**
 	 * Checks that the query is ready for {@link #execute()}
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 * @since Apr 22, 2014
 	 */
@@ -39,7 +41,7 @@ public interface ConcentrationsQuery
 
 	/**
 	 * Use all segments in the query.
-	 * 
+	 *
 	 * @return this
 	 * @since Apr 22, 2014
 	 */
@@ -47,7 +49,7 @@ public interface ConcentrationsQuery
 
 	/**
 	 * Use all time steps in the query.
-	 * 
+	 *
 	 * @return this
 	 * @since Apr 22, 2014
 	 */
@@ -55,15 +57,25 @@ public interface ConcentrationsQuery
 
 	/**
 	 * Use all variables in the query.
-	 * 
+	 *
 	 * @return this
 	 * @since Apr 22, 2014
 	 */
 	ConcentrationsQuery withAllVariables();
 
 	/**
+	 * Include progress reporting with the query
+	 *
+	 * @param p_Monitor
+	 *            the progress monitor
+	 * @return this
+	 * @since Feb 9, 2015
+	 */
+	ConcentrationsQuery withProgress(IProgressMonitor p_Monitor);
+
+	/**
 	 * Add the segments to the query.
-	 * 
+	 *
 	 * @param p_SegmentNames
 	 *            the {@link BMDSegment}(s) to add to the query
 	 * @return this
@@ -73,7 +85,7 @@ public interface ConcentrationsQuery
 
 	/**
 	 * Add the time steps to the query.
-	 * 
+	 *
 	 * @param p_TimeSteps
 	 *            the {@link BMDTimeStep}(s) to add to the query
 	 * @return this
@@ -83,7 +95,7 @@ public interface ConcentrationsQuery
 
 	/**
 	 * /** Add the variables to the query.
-	 * 
+	 *
 	 * @param p_Variables
 	 *            the {@link BMDVariable}(s) to add to the query
 	 * @return this

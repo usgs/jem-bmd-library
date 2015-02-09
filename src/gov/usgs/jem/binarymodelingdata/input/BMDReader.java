@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package gov.usgs.jem.binarymodelingdata.input;
 
@@ -30,6 +30,7 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 
 import org.apache.log4j.Level;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
@@ -52,65 +53,72 @@ import com.google.common.io.Files;
 /**
  * Reads WASP BMD output files. Based on clsBMD.vb @
  * http://wrdb.codeplex.com/SourceControl/latest.
- * 
+ *
  * BMD file structure is configured as follows:
  * <ul>
  * <li>Header (78 bytes)</li>
- * 
+ *
  * <li>Variables (18 single-octet chars for name followed by 12 single-octet
  * chars for units)</li>
- * 
+ *
  * <li>Concs ("concentrations": floats arranged by Segment, Time, then Variable)
  * </li>
- * 
+ *
  * <li>Times (doubles: number of days since seed year)</li>
- * 
+ *
  * <li>MIN/MAX VAR (float pairs of min/max values for each variable)</li>
- * 
+ *
  * <li>MIN/MAX SEG-VAR> (float pairs of min/max values for each segment and
  * variable)</li>
- * 
+ *
  * <li>SEGNAMES (15 single-octet char names for each segment)</li>
  * </ul>
- * 
+ *
  * @author mckelvym
  * @since Apr 17, 2014
- * 
+ *
  */
 public class BMDReader
 {
 	/**
 	 * Query class for getting concentrations data.
-	 * 
+	 *
 	 * @author mckelvym
 	 * @since Apr 22, 2014
-	 * 
+	 *
 	 */
 	private final class ConcentrationsQueryImpl implements ConcentrationsQuery
 	{
 		/**
+		 * Progress reporting monitor
+		 *
+		 * @since Feb 9, 2015
+		 */
+		private final List<IProgressMonitor>	m_Monitor;
+		/**
 		 * The indices into {@link BMDReader#m_SegmentNames} to query
-		 * 
+		 *
 		 * @since Apr 22, 2014
 		 */
-		private final SortedSet<Integer>	m_qSegments;
+		private final SortedSet<Integer>		m_qSegments;
+
 		/**
 		 * The indices into {@link BMDReader#m_Times} to query
-		 * 
+		 *
 		 * @since Apr 22, 2014
 		 */
-		private final SortedSet<Integer>	m_qTimeSteps;
+		private final SortedSet<Integer>		m_qTimeSteps;
 
 		/**
 		 * The indices into {@link BMDReader#m_VariableNames} to query
-		 * 
+		 *
 		 * @since Apr 22, 2014
 		 */
-		private final SortedSet<Integer>	m_qVariables;
+		private final SortedSet<Integer>		m_qVariables;
 
 		/**
 		 * Create a new, empty query
-		 * 
+		 *
 		 * @since Apr 22, 2014
 		 */
 		private ConcentrationsQueryImpl()
@@ -118,12 +126,13 @@ public class BMDReader
 			m_qVariables = Sets.newTreeSet();
 			m_qSegments = Sets.newTreeSet();
 			m_qTimeSteps = Sets.newTreeSet();
+			m_Monitor = Lists.newArrayList();
 		}
 
 		/**
 		 * Executes the query and returns the results as a
 		 * {@link Concentrations} collection
-		 * 
+		 *
 		 * @return the results of the query.
 		 * @throws IOException
 		 * @since Apr 22, 2014
@@ -137,7 +146,7 @@ public class BMDReader
 		/**
 		 * Determines if the given variable index, segment index, and time index
 		 * are part of the query.
-		 * 
+		 *
 		 * @param p_VariableIndex
 		 *            the variable index (see {@link BMDReader#m_VariableNames})
 		 * @param p_SegmentIndex
@@ -166,7 +175,7 @@ public class BMDReader
 
 		/**
 		 * Checks that the query is ready for {@link #execute()}
-		 * 
+		 *
 		 * @throws IllegalStateException
 		 * @since Apr 22, 2014
 		 */
@@ -194,7 +203,7 @@ public class BMDReader
 
 		/**
 		 * Use all segments in the query.
-		 * 
+		 *
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
@@ -210,7 +219,7 @@ public class BMDReader
 
 		/**
 		 * Use all time steps in the query.
-		 * 
+		 *
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
@@ -224,7 +233,7 @@ public class BMDReader
 
 		/**
 		 * Use all variables in the query.
-		 * 
+		 *
 		 * @return this
 		 * @since Apr 22, 2014
 		 */
@@ -235,6 +244,14 @@ public class BMDReader
 			m_qVariables.addAll(ContiguousSet.create(
 					Range.closedOpen(0, m_Variables.size()),
 					DiscreteDomain.integers()).asList());
+			return this;
+		}
+
+		@Override
+		public ConcentrationsQuery withProgress(final IProgressMonitor p_Monitor)
+		{
+			m_Monitor.clear();
+			m_Monitor.add(p_Monitor);
 			return this;
 		}
 
@@ -277,7 +294,7 @@ public class BMDReader
 
 	/**
 	 * Number of bytes representing concentrations values (float)
-	 * 
+	 *
 	 * @since Apr 23, 2014
 	 */
 	private static final int				CONCENTRATIONS_SIZE	= 4;
@@ -290,28 +307,28 @@ public class BMDReader
 
 	/**
 	 * Number of bytes representing segment names (15 single-octet chars)
-	 * 
+	 *
 	 * @since Apr 23, 2014
 	 */
 	private static final int				SEGMENT_NAME_SIZE	= 15;
 
 	/**
 	 * Number of bytes representing time stamps (double
-	 * 
+	 *
 	 * @since Apr 23, 2014
 	 */
 	private static final int				TIMESTAMP_SIZE		= 8;
 
 	/**
 	 * Number of bytes representing variable names (18 single-octet chars)
-	 * 
+	 *
 	 * @since Apr 23, 2014
 	 */
 	private static final int				VARIABLE_NAME_SIZE	= 18;
 
 	/**
 	 * Number of bytes representing variable units (12 single-octet chars)
-	 * 
+	 *
 	 * @since Apr 23, 2014
 	 */
 	private static final int				VARIABLE_UNIT_SIZE	= 12;
@@ -321,7 +338,7 @@ public class BMDReader
 	 * transforms it into a new array that retains the first two elements, adds
 	 * ellipses as the third element, and retains the last element as the fourth
 	 * output element. For each element, calls its toString() method.
-	 * 
+	 *
 	 * @param p_Array
 	 *            An input array
 	 * @return a new array representing an "abbreviated" version of the input
@@ -354,7 +371,7 @@ public class BMDReader
 
 	/**
 	 * Open the BMD file at the provided path and read its header
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
@@ -370,7 +387,7 @@ public class BMDReader
 	/**
 	 * Open the BMD file at the provided path and read its header. Debugging
 	 * messages will be logged.
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
@@ -386,7 +403,7 @@ public class BMDReader
 	/**
 	 * Open the BMD file at the provided path and read its header. Debugging
 	 * messages will be logged.
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
@@ -407,7 +424,7 @@ public class BMDReader
 
 	/**
 	 * The {@link ByteOrder} to read from the file.
-	 * 
+	 *
 	 * @since Apr 22, 2014
 	 */
 	private final ByteOrder						m_ByteOrder;
@@ -415,21 +432,21 @@ public class BMDReader
 	/**
 	 * Computed after the size of the dimensions are known. This is the number
 	 * of bytes into the file where concentrations values can be found.
-	 * 
+	 *
 	 * @since Apr 18, 2014
 	 */
 	private long								m_ConcentrationsLocation;
 
 	/**
 	 * The data input stream used to read from the file.
-	 * 
+	 *
 	 * @since Apr 22, 2014
 	 */
 	private SeekableDataFileInputStream			m_DIS;
 
 	/**
 	 * The path to the BMD file
-	 * 
+	 *
 	 * @see #getFilePath()
 	 * @since Apr 22, 2014
 	 */
@@ -437,7 +454,7 @@ public class BMDReader
 
 	/**
 	 * The header for the BMD file
-	 * 
+	 *
 	 * @see #getHeader()
 	 * @since Apr 18, 2014
 	 */
@@ -445,7 +462,7 @@ public class BMDReader
 
 	/**
 	 * Mapping of variable name to maximum value.
-	 * 
+	 *
 	 * @see #getVariableMax(String)
 	 * @since Apr 18, 2014
 	 */
@@ -453,7 +470,7 @@ public class BMDReader
 
 	/**
 	 * Variable name, segment name -> maximum value
-	 * 
+	 *
 	 * @see #getVariableSegmentMax(String, String)
 	 * @since Apr 18, 2014
 	 */
@@ -463,7 +480,7 @@ public class BMDReader
 	 * Computed after the size of the dimensions are known. This is the number
 	 * of bytes into the file where the min/max values for segments can be
 	 * found.
-	 * 
+	 *
 	 * @since Apr 18, 2014
 	 */
 	private long								m_MinMaxOverVarSegsLocation;
@@ -472,14 +489,14 @@ public class BMDReader
 	 * Computed after the size of the dimensions are known. This is the number
 	 * of bytes into the file where the min/max values for variables can be
 	 * found.
-	 * 
+	 *
 	 * @since Apr 18, 2014
 	 */
 	private long								m_MinMaxOverVarsLocation;
 
 	/**
 	 * Mapping of variable name to minimum value.
-	 * 
+	 *
 	 * @see #getVariableMin(String)
 	 * @since Apr 18, 2014
 	 */
@@ -487,7 +504,7 @@ public class BMDReader
 
 	/**
 	 * Variable name, segment name -> minimum value
-	 * 
+	 *
 	 * @see #getVariableSegmentMin(String, String)
 	 * @since Apr 18, 2014
 	 */
@@ -502,7 +519,7 @@ public class BMDReader
 	/**
 	 * Computed after the size of the dimensions are known. This is the number
 	 * of bytes into the file where the segment names can be found.
-	 * 
+	 *
 	 * @since Apr 18, 2014
 	 */
 	private long								m_SegmentNamesLocation;
@@ -516,7 +533,7 @@ public class BMDReader
 	/**
 	 * Computed after the size of the dimensions are known. This is the number
 	 * of bytes into the file where the time values can be found.
-	 * 
+	 *
 	 * @since Apr 18, 2014
 	 */
 	private long								m_TimesLocation;
@@ -535,7 +552,7 @@ public class BMDReader
 
 	/**
 	 * Create a new reader for the BMD file at the provided path
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            path to the BMD file
 	 * @since Apr 23, 2014
@@ -555,7 +572,7 @@ public class BMDReader
 
 	/**
 	 * Close the reader.
-	 * 
+	 *
 	 * @throws IOException
 	 * @since Apr 25, 2014
 	 */
@@ -577,7 +594,7 @@ public class BMDReader
 
 	/**
 	 * Get the opened file path
-	 * 
+	 *
 	 * @return the opened file path
 	 * @since Apr 23, 2014
 	 */
@@ -589,7 +606,7 @@ public class BMDReader
 
 	/**
 	 * Get the file header
-	 * 
+	 *
 	 * @return the file header
 	 * @since Apr 23, 2014
 	 */
@@ -601,7 +618,7 @@ public class BMDReader
 
 	/**
 	 * Get the seed date
-	 * 
+	 *
 	 * @return the seed date
 	 * @since Apr 23, 2014
 	 */
@@ -614,7 +631,7 @@ public class BMDReader
 	/**
 	 * Get the list of segments. <i>Note: Constructs a new list of new objects
 	 * for each call.</i>
-	 * 
+	 *
 	 * @return the list of segments
 	 * @since Apr 23, 2014
 	 */
@@ -627,7 +644,7 @@ public class BMDReader
 	/**
 	 * Creates a new contiguous set of integers starting at 0 and proceeding to
 	 * 1 - the size of the times list.
-	 * 
+	 *
 	 * @return
 	 * @since Apr 22, 2014
 	 */
@@ -641,7 +658,7 @@ public class BMDReader
 	/**
 	 * Get the list of time steps. <i>Note: Constructs a new list of new objects
 	 * for each call.</i>
-	 * 
+	 *
 	 * @return the list of time steps
 	 * @since Apr 23, 2014
 	 */
@@ -654,7 +671,7 @@ public class BMDReader
 	/**
 	 * Get the maximum value, retrieved from the header, for the specified
 	 * variable.
-	 * 
+	 *
 	 * @param p_VariableName
 	 *            the variable name
 	 * @return the maximum value
@@ -680,7 +697,7 @@ public class BMDReader
 	/**
 	 * Get the minimum value, retrieved from the header, for the specified
 	 * variable.
-	 * 
+	 *
 	 * @param p_VariableName
 	 *            the variable name
 	 * @return the minimum value
@@ -706,7 +723,7 @@ public class BMDReader
 	/**
 	 * Get the list of variables. <i>Note: Constructs a new list of new objects
 	 * for each call.</i>
-	 * 
+	 *
 	 * @return the list of variables
 	 * @since Apr 23, 2014
 	 */
@@ -719,7 +736,7 @@ public class BMDReader
 	/**
 	 * Get the maximum value, retrieved from the header, for the specified
 	 * variable segment
-	 * 
+	 *
 	 * @param p_VariableName
 	 *            the variable name
 	 * @param p_SegmentName
@@ -750,7 +767,7 @@ public class BMDReader
 	/**
 	 * Get the minimum value, retrieved from the header, for the specified
 	 * variable segment
-	 * 
+	 *
 	 * @param p_VariableName
 	 *            the variable name
 	 * @param p_SegmentName
@@ -780,7 +797,7 @@ public class BMDReader
 
 	/**
 	 * Construct a new query for concentrations.
-	 * 
+	 *
 	 * @return
 	 * @since Apr 22, 2014
 	 */
@@ -793,7 +810,7 @@ public class BMDReader
 	/**
 	 * Reads the concentrations corresponding to the
 	 * {@link ConcentrationsQueryImpl} into a table.
-	 * 
+	 *
 	 * @param p_Query
 	 *            the valid {@link ConcentrationsQueryImpl}
 	 * @return the {@link Concentrations} for the provided
@@ -819,10 +836,22 @@ public class BMDReader
 		 */
 		final Table<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>> results = TreeBasedTable
 				.create();
+
+		IProgressMonitor monitor = null;
+		if (!p_Query.m_Monitor.isEmpty())
+		{
+			monitor = p_Query.m_Monitor.get(0);
+		}
+
+		if (monitor != null)
+		{
+			monitor.beginTask("Querying...", m_Header.getTimesSize());
+		}
+
 		/**
 		 * We can either calculate the skip from the current seek, or just keep
 		 * a tally of bytes to skip.
-		 * 
+		 *
 		 * If calculating skip, use: skip = t * m_SegmentNames.size() *
 		 * m_VariableNames.size() FBYTES + s * m_VariableNames.size() * FBYTES +
 		 * v * FBYTES
@@ -872,6 +901,15 @@ public class BMDReader
 						skipBytes += FBYTES;
 					}
 				}
+			}
+
+			if (monitor != null)
+			{
+				if (monitor.isCanceled())
+				{
+					break;
+				}
+				monitor.worked(1);
 			}
 		}
 
@@ -954,14 +992,14 @@ public class BMDReader
 					/**
 					 * The time steps and values for a particular variable and
 					 * segment
-					 * 
+					 *
 					 * @since Apr 23, 2014
 					 */
 					Cell<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>>					m_Cell			= null;
 
 					/**
 					 * Iterates the variables and segments
-					 * 
+					 *
 					 * @since Apr 23, 2014
 					 */
 					final Iterator<Cell<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>>>	m_CellIterator	= results
@@ -970,7 +1008,7 @@ public class BMDReader
 
 					/**
 					 * Time steps and values iterator
-					 * 
+					 *
 					 * @since Apr 23, 2014
 					 */
 					Iterator<Entry<BMDTimeStep, Float>>												m_TimeIterator	= null;
@@ -1014,9 +1052,9 @@ public class BMDReader
 	 * {@link #m_Header} fields and retrieving the variable names, variable
 	 * units, segment names, min/max over variables, and min/max over variable
 	 * segments.
-	 * 
+	 *
 	 * Times are not retrieved (aside from header information).
-	 * 
+	 *
 	 * @throws IOException
 	 * @since Apr 21, 2014
 	 */
@@ -1401,7 +1439,7 @@ public class BMDReader
 
 	/**
 	 * Validate the reader.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 * @since Apr 22, 2014
 	 */
