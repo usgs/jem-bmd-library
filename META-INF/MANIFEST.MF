@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: USGS/JEM
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
- guava;bundle-version="16.0.1",
+ guava;bundle-version="18.0.0",
  org.apache.log4j;bundle-version="1.2.17"
 Export-Package: gov.usgs.jem.binarymodelingdata,
  gov.usgs.jem.binarymodelingdata.input
