@@ -13,22 +13,23 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.io.LittleEndianDataInputStream;
 
 /**
  * Package-private implementation of {@link SeekableDataFileInputStream},
  * created by {@link SeekableDataFileInputStreamImpl#open(String, ByteOrder)}
- * 
+ *
  * @author mckelvym
  * @since Apr 21, 2014
- * 
+ *
  */
 class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 {
 	/**
 	 * Endianness that controls the type of {@link DataInput} initialized
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	private final ByteOrder		m_ByteOrder;
@@ -36,7 +37,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	/**
 	 * Retained so the underlying stream can be closed. Initialized to the same
 	 * value as {@link #m_DataInputStream}
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	private FilterInputStream	m_Closeable;
@@ -44,14 +45,14 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	/**
 	 * Used for reading data. One of {@link DataInputStream} or
 	 * {@link LittleEndianDataInputStream}
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	private DataInput			m_DataInputStream;
 
 	/**
 	 * File to read from
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	private final String		m_FilePath;
@@ -59,7 +60,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	/**
 	 * Input stream used to construct the underlying {@link DataInputStream} or
 	 * {@link LittleEndianDataInputStream}
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	private BufferedInputStream	m_InputStream;
@@ -67,7 +68,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	/**
 	 * Create a new {@link DataInputStream} using the provided file path and
 	 * endianness.
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the file path to read from
 	 * @param p_ByteOrder
@@ -86,9 +87,9 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 
 	/**
 	 * Close the input
-	 * 
+	 *
 	 * @throws IOException
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 
@@ -165,10 +166,10 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	/**
 	 * Close any previous streams and initialize new ones from the provided file
 	 * path using the provided byte order.
-	 * 
+	 *
 	 * {@link #m_InputStream}, {@link #m_DataInputStream}, and
 	 * {@link #m_Closeable} will be set.
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the file path to open
 	 * @param p_ByteOrder
@@ -356,7 +357,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	@Override
 	public String toString()
 	{
-		return Objects.toStringHelper(this).add("file", m_FilePath)
+		return MoreObjects.toStringHelper(this).add("file", m_FilePath)
 				.add("endianness", m_ByteOrder).toString();
 	}
 }

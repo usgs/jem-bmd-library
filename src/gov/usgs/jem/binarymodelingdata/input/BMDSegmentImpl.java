@@ -2,38 +2,39 @@ package gov.usgs.jem.binarymodelingdata.input;
 
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
 
 /**
  * Implements {@link BMDSegment} including {@link #hashCode()} and
  * {@link #equals(Object)}
- * 
+ *
  * Package-private.
- * 
+ *
  * @author mckelvym
  * @since Apr 28, 2014
- * 
+ *
  */
 class BMDSegmentImpl implements BMDSegment
 {
 	/**
 	 * Index at which this appears in the file.
-	 * 
+	 *
 	 * @since May 16, 2014
 	 */
 	private final int		m_Index;
 
 	/**
 	 * The segment name
-	 * 
+	 *
 	 * @since Apr 28, 2014
 	 */
 	private final String	m_SegmentName;
 
 	/**
 	 * Create a new instance for the provided segment name
-	 * 
+	 *
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_SegmentName
@@ -86,7 +87,7 @@ class BMDSegmentImpl implements BMDSegment
 	@Override
 	public String toString()
 	{
-		return Objects.toStringHelper(BMDSegment.class).add("name", getName())
-				.toString();
+		return MoreObjects.toStringHelper(BMDSegment.class)
+				.add("name", getName()).toString();
 	}
 }

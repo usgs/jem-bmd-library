@@ -32,6 +32,7 @@ import java.util.TimeZone;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
@@ -167,7 +168,7 @@ public class BMDReader
 		@Override
 		public String toString()
 		{
-			return Objects.toStringHelper(ConcentrationsQuery.class)
+			return MoreObjects.toStringHelper(ConcentrationsQuery.class)
 					.add("numVars", m_qVariables.size())
 					.add("numSegs", m_qSegments.size())
 					.add("numTSteps", m_qTimeSteps.size()).toString();
@@ -1209,7 +1210,7 @@ public class BMDReader
 			m_SegmentNamesLocation = m_MinMaxOverVarSegsLocation
 					+ (long) m_Header.getVariablesSize()
 					* m_Header.getSegmentsSize() * CONCENTRATIONS_SIZE * 2;
-			log.debug(Objects.toStringHelper("Locations: ")
+			log.debug(MoreObjects.toStringHelper("Locations: ")
 					.add("concs", m_ConcentrationsLocation)
 					.add("times", m_TimesLocation)
 					.add("minMaxVars", m_MinMaxOverVarsLocation)

@@ -2,45 +2,46 @@ package gov.usgs.jem.binarymodelingdata.input;
 
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
 
 /**
  * Implements {@link BMDTimeStep} including {@link #hashCode()} and
  * {@link #equals(Object)}
- * 
+ *
  * Package-private.
- * 
+ *
  * @author mckelvym
  * @since Apr 28, 2014
- * 
+ *
  */
 class BMDTimeStepImpl implements BMDTimeStep
 {
 	/**
 	 * Index at which this appears in the file.
-	 * 
+	 *
 	 * @since May 16, 2014
 	 */
 	private final int		m_Index;
 
 	/**
 	 * The raw time value in the file.
-	 * 
+	 *
 	 * @since May 16, 2014
 	 */
 	private final double	m_RawValue;
 
 	/**
 	 * The time value in ms
-	 * 
+	 *
 	 * @since Apr 28, 2014
 	 */
 	private final Long		m_TimeMS;
 
 	/**
 	 * Create a new instance for the provided time value in ms.
-	 * 
+	 *
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_TimeMS
@@ -101,7 +102,7 @@ class BMDTimeStepImpl implements BMDTimeStep
 	@Override
 	public String toString()
 	{
-		return Objects.toStringHelper(BMDTimeStep.class).add("time", getTime())
-				.toString();
+		return MoreObjects.toStringHelper(BMDTimeStep.class)
+				.add("time", getTime()).toString();
 	}
 }
