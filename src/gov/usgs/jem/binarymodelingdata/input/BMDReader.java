@@ -1,6 +1,3 @@
-/**
- *
- */
 package gov.usgs.jem.binarymodelingdata.input;
 
 import static com.google.common.base.Preconditions.checkArgument;
