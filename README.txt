@@ -24,7 +24,7 @@ Use the Maven tool in the root of this project:
  * http://www.oracle.com/technetwork/java/javase/downloads/index.html
  * https://maven.apache.org/
 
-This library can be compiled as an Eclipse-plugin using Tycho with the following command:
+This library can be compiled as an Eclipse-plugin using Maven with Tycho using the following command:
 
 $ mvn install 
 
