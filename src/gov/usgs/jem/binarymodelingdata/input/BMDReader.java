@@ -70,7 +70,7 @@ import gov.usgs.jem.binarymodelingdata.Concentrations;
  *
  * <li>MIN/MAX VAR (float pairs of min/max values for each variable)</li>
  *
- * <li>MIN/MAX SEG-VAR> (float pairs of min/max values for each segment and
+ * <li>MIN/MAX SEG-VAR (float pairs of min/max values for each segment and
  * variable)</li>
  *
  * <li>SEGNAMES (15 single-octet char names for each segment)</li>
@@ -98,21 +98,21 @@ public class BMDReader
 		 */
 		private final List<IProgressMonitor>	m_Monitor;
 		/**
-		 * The indices into {@link BMDReader#m_SegmentNames} to query
+		 * The indices into {@link BMDReader#m_Segments} to query
 		 *
 		 * @since Apr 22, 2014
 		 */
 		private final SortedSet<Integer>		m_qSegments;
 
 		/**
-		 * The indices into {@link BMDReader#m_Times} to query
+		 * The indices into {@link BMDReader#m_TimeSteps} to query
 		 *
 		 * @since Apr 22, 2014
 		 */
 		private final SortedSet<Integer>		m_qTimeSteps;
 
 		/**
-		 * The indices into {@link BMDReader#m_VariableNames} to query
+		 * The indices into {@link BMDReader#m_Variables} to query
 		 *
 		 * @since Apr 22, 2014
 		 */
@@ -137,6 +137,8 @@ public class BMDReader
 		 *
 		 * @return the results of the query.
 		 * @throws IOException
+		 *             if the concentrations provided in the query could not be
+		 *             read
 		 * @since Apr 22, 2014
 		 */
 		@Override
@@ -150,11 +152,11 @@ public class BMDReader
 		 * are part of the query.
 		 *
 		 * @param p_VariableIndex
-		 *            the variable index (see {@link BMDReader#m_VariableNames})
+		 *            the variable index (see {@link BMDReader#m_Variables})
 		 * @param p_SegmentIndex
-		 *            the segment index (see {@link BMDReader#m_SegmentNames})
+		 *            the segment index (see {@link BMDReader#m_Segments})
 		 * @param p_TimeIndex
-		 *            the time index (see {@link BMDReader#m_Times})
+		 *            the time index (see {@link BMDReader#m_TimeSteps})
 		 * @return true if this given indices are part of the query
 		 * @since Apr 23, 2014
 		 */
@@ -179,6 +181,7 @@ public class BMDReader
 		 * Checks that the query is ready for {@link #execute()}
 		 *
 		 * @throws IllegalStateException
+		 *             if the query is malformed
 		 * @since Apr 22, 2014
 		 */
 		@Override
@@ -380,6 +383,7 @@ public class BMDReader
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
 	 * @throws IOException
+	 *             if the file could not be opened for any reason
 	 * @since Apr 21, 2014
 	 */
 	public static BMDReader open(final String p_FilePath) throws IOException
@@ -396,6 +400,7 @@ public class BMDReader
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
 	 * @throws IOException
+	 *             if the file could not be opened for any reason
 	 * @since Apr 21, 2014
 	 */
 	public static BMDReader openDebug(final String p_FilePath)
@@ -412,6 +417,7 @@ public class BMDReader
 	 *            the path to the BMD file
 	 * @return the {@link BMDReader}
 	 * @throws IOException
+	 *             if the file could not be opened for any reason
 	 * @since Apr 21, 2014
 	 */
 	private static BMDReader openInternal(final String p_FilePath)
@@ -474,7 +480,7 @@ public class BMDReader
 	private final Map<String, Float>			m_MaxOverVars;
 
 	/**
-	 * Variable name, segment name -> maximum value
+	 * Variable name, segment name mapped to maximum value
 	 *
 	 * @see #getVariableSegmentMax(String, String)
 	 * @since Apr 18, 2014
@@ -508,7 +514,7 @@ public class BMDReader
 	private final Map<String, Float>			m_MinOverVars;
 
 	/**
-	 * Variable name, segment name -> minimum value
+	 * Variable name, segment name mapped to minimum value
 	 *
 	 * @see #getVariableSegmentMin(String, String)
 	 * @since Apr 18, 2014
@@ -579,6 +585,8 @@ public class BMDReader
 	 * Close the reader.
 	 *
 	 * @throws IOException
+	 *             if closing the internal {@link SeekableDataFileInputStream}
+	 *             failed
 	 * @since Apr 25, 2014
 	 */
 	public void close() throws IOException
@@ -650,7 +658,7 @@ public class BMDReader
 	 * Creates a new contiguous set of integers starting at 0 and proceeding to
 	 * 1 - the size of the times list.
 	 *
-	 * @return
+	 * @return the 0-based timestep indices
 	 * @since Apr 22, 2014
 	 */
 	private ImmutableList<Integer> getTimeStepIndices()
@@ -805,7 +813,7 @@ public class BMDReader
 	/**
 	 * Construct a new query for concentrations.
 	 *
-	 * @return
+	 * @return a new {@link ConcentrationsQuery} instance
 	 * @since Apr 22, 2014
 	 */
 	public ConcentrationsQuery newConcentrationsQuery()
@@ -823,6 +831,7 @@ public class BMDReader
 	 * @return the {@link Concentrations} for the provided
 	 *         {@link ConcentrationsQueryImpl}
 	 * @throws IOException
+	 *             if concentations could not be read from the file
 	 * @since Apr 22, 2014
 	 */
 	private Concentrations readConcentrations(
@@ -1059,6 +1068,7 @@ public class BMDReader
 	 * Times are not retrieved (aside from header information).
 	 *
 	 * @throws IOException
+	 *             if the header does not match expectations
 	 * @since Apr 21, 2014
 	 */
 	private void readHeader() throws IOException
@@ -1448,6 +1458,8 @@ public class BMDReader
 	 * Validate the reader.
 	 *
 	 * @throws IllegalStateException
+	 *             if the {@link SeekableDataFileInputStream} instance was not
+	 *             initialized
 	 * @since Apr 22, 2014
 	 */
 	private void validate() throws IllegalStateException

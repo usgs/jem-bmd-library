@@ -406,6 +406,8 @@ public final class BMDHeader
 	/**
 	 * Create a new header instance from the provided builder.
 	 *
+	 * @param p_Builder
+	 *            the {@link Builder} to take initialization from
 	 * @since Apr 17, 2014
 	 */
 	private BMDHeader(final Builder p_Builder)

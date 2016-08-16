@@ -74,6 +74,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	 * @param p_ByteOrder
 	 *            the {@link ByteOrder} endianness to use
 	 * @throws IOException
+	 *             if the stream could not be initialized
 	 * @since Apr 21, 2014
 	 */
 	public SeekableDataFileInputStreamImpl(final String p_FilePath,
@@ -89,6 +90,7 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	 * Close the input
 	 *
 	 * @throws IOException
+	 *             an error occurred while attempting to close the reader
 	 *
 	 * @since Apr 21, 2014
 	 */
@@ -175,6 +177,8 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	 * @param p_ByteOrder
 	 *            the endianness to use
 	 * @throws IOException
+	 *             an error occurred while attempting to initialize input
+	 *             stream(s)
 	 * @since Apr 21, 2014
 	 */
 	private void initialize(final String p_FilePath,

@@ -38,6 +38,7 @@ class BMDSegmentImpl implements BMDSegment
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_SegmentName
+	 *            the segment name
 	 * @since Apr 28, 2014
 	 */
 	public BMDSegmentImpl(final int p_Index, final String p_SegmentName)

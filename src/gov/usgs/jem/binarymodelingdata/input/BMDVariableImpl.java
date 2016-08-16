@@ -50,6 +50,7 @@ class BMDVariableImpl implements BMDVariable
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_VariableName
+	 *            the variable name
 	 * @param p_Units
 	 *            variable units
 	 * @param p_PCode

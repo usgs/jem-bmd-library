@@ -45,6 +45,9 @@ class BMDTimeStepImpl implements BMDTimeStep
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_TimeMS
+	 *            the milleseconds timestamp
+	 * @param p_RawValue
+	 *            the raw value read from the file
 	 * @since Apr 28, 2014
 	 */
 	public BMDTimeStepImpl(final int p_Index, final Long p_TimeMS,

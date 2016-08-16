@@ -21,8 +21,9 @@ public interface Concentrations extends Iterable<Concentration>
 	 * @param p_TimeStep
 	 *            the time step
 	 * @return the {@link Concentration}
-	 * @throw {@link IllegalArgumentException} if there is not an entry for the
-	 *        given variable, segment, or time step.
+	 * @throws IllegalArgumentException
+	 *             if there is not an entry for the given variable, segment, or
+	 *             time step.
 	 * @since Apr 23, 2014
 	 */
 	Concentration get(BMDVariable p_Variable, BMDSegment p_Segment,

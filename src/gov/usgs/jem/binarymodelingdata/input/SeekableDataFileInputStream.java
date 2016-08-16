@@ -33,6 +33,8 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * @param p_ByteOrder
 	 *            the {@link ByteOrder} endianness to use
 	 * @throws IOException
+	 *             if the file could not be opened for some reason
+	 * @return a new {@link SeekableDataFileInputStream} instance
 	 * @since Apr 21, 2014
 	 */
 	public static SeekableDataFileInputStream open(final String p_FilePath,
@@ -45,6 +47,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * Close the input
 	 *
 	 * @throws IOException
+	 *             if the stream could not be closed
 	 *
 	 * @since Apr 21, 2014
 	 */
@@ -75,6 +78,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 *            the number of ascii characters to read
 	 * @return the char values read
 	 * @throws IOException
+	 *             an error occurred while attempting to read from the file
 	 * @since Apr 21, 2014
 	 */
 	public abstract char[] readCharsAsAscii(final int p_Count)
@@ -85,6 +89,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 *
 	 * @return the unsigned integer recast as a signed integer (beware overflow)
 	 * @throws IOException
+	 *             an error occurred while attempting to read from the file
 	 * @since Apr 21, 2014
 	 */
 	public abstract int readUInt32() throws IOException;
