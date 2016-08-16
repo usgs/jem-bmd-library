@@ -72,3 +72,6 @@ $ mvn install -P packaging-jar
 [INFO] Finished at: 2016-08-16T10:33:08-04:00
 [INFO] Final Memory: 19M/300M
 [INFO] ------------------------------------------------------------------------
+
+Usage:
+BMDReader.open(p_FilePath)
