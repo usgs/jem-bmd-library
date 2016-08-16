@@ -177,8 +177,8 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 	 * @throws IOException
 	 * @since Apr 21, 2014
 	 */
-	private void initialize(final String p_FilePath, final ByteOrder p_ByteOrder)
-			throws IOException
+	private void initialize(final String p_FilePath,
+			final ByteOrder p_ByteOrder) throws IOException
 	{
 		checkNotNull(p_FilePath, "File path required.");
 		checkNotNull(p_ByteOrder, "Byte order required.");
@@ -190,7 +190,8 @@ class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 			close();
 		}
 
-		m_InputStream = new BufferedInputStream(new FileInputStream(p_FilePath));
+		m_InputStream = new BufferedInputStream(
+				new FileInputStream(p_FilePath));
 		if (p_ByteOrder.equals(ByteOrder.BIG_ENDIAN))
 		{
 			final DataInputStream dIS = new DataInputStream(m_InputStream);

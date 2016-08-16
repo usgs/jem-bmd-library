@@ -13,21 +13,21 @@ import com.google.common.io.LittleEndianDataInputStream;
  * {@link LittleEndianDataInputStream} (little-endian) as a {@link DataInput}
  * that allows {@link #seek(int)} to any part of the file (similar to
  * {@link RandomAccessFile}).
- * 
+ *
  * @see #open(String, ByteOrder)
  * @see #seek(int)
  * @see #close()
- * 
+ *
  * @author mckelvym
  * @since Apr 21, 2014
- * 
+ *
  */
 public abstract class SeekableDataFileInputStream implements DataInput
 {
 	/**
 	 * Create a new {@link SeekableDataFileInputStream} using the provided file
 	 * path and endianness.
-	 * 
+	 *
 	 * @param p_FilePath
 	 *            the file path to read from
 	 * @param p_ByteOrder
@@ -43,16 +43,16 @@ public abstract class SeekableDataFileInputStream implements DataInput
 
 	/**
 	 * Close the input
-	 * 
+	 *
 	 * @throws IOException
-	 * 
+	 *
 	 * @since Apr 21, 2014
 	 */
 	public abstract void close() throws IOException;
 
 	/**
 	 * Get the endianness
-	 * 
+	 *
 	 * @return the {@link ByteOrder}
 	 * @since Apr 21, 2014
 	 */
@@ -60,7 +60,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 
 	/**
 	 * Get the file path being read from
-	 * 
+	 *
 	 * @return the file path being read from.
 	 * @since Apr 21, 2014
 	 */
@@ -70,7 +70,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * Reads <b>one</b> input byte per char and returns p_Count char values.
 	 * This method is suitable for ascii-encoded single octet values from a
 	 * file.
-	 * 
+	 *
 	 * @param p_Count
 	 *            the number of ascii characters to read
 	 * @return the char values read
@@ -82,7 +82,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 
 	/**
 	 * Reads an unsigned integer (4-bytes) into a java signed integer (4-bytes).
-	 * 
+	 *
 	 * @return the unsigned integer recast as a signed integer (beware overflow)
 	 * @throws IOException
 	 * @since Apr 21, 2014
@@ -93,7 +93,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * Sets the file-pointer offset, measured from the beginning of this file,
 	 * at which the next read or write occurs. Closes the streams and reopens
 	 * them first.
-	 * 
+	 *
 	 * @param p_Position
 	 *            the offset position, measured in bytes from the beginning of
 	 *            the file, at which to set the file pointer.
@@ -113,7 +113,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * (with 0 bytes being the escape condition). This method never throws an
 	 * <code>EOFException</code>. The actual number of bytes skipped is
 	 * returned.
-	 * 
+	 *
 	 * @param p_Count
 	 *            the number of bytes to be skipped.
 	 * @return the number of bytes actually skipped.

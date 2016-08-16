@@ -4,16 +4,16 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * Container for a collection of {@link Concentration}.
- * 
+ *
  * @author mckelvym
  * @since Apr 23, 2014
- * 
+ *
  */
 public interface Concentrations extends Iterable<Concentration>
 {
 	/**
 	 * Retrieve a particular entry.
-	 * 
+	 *
 	 * @param p_Variable
 	 *            the variable
 	 * @param p_Segment
@@ -30,7 +30,7 @@ public interface Concentrations extends Iterable<Concentration>
 
 	/**
 	 * Get the segments in this container
-	 * 
+	 *
 	 * @return the segments in this container
 	 * @since Apr 23, 2014
 	 */
@@ -38,7 +38,7 @@ public interface Concentrations extends Iterable<Concentration>
 
 	/**
 	 * Get the time steps in this container
-	 * 
+	 *
 	 * @return the time steps in this container
 	 * @since Apr 23, 2014
 	 */
@@ -46,7 +46,7 @@ public interface Concentrations extends Iterable<Concentration>
 
 	/**
 	 * Get the variables in this container
-	 * 
+	 *
 	 * @return the variables in this container
 	 * @since Apr 23, 2014
 	 */

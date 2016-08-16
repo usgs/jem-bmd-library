@@ -1,10 +1,10 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
+
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
 
 /**
  * Implements {@link BMDSegment} including {@link #hashCode()} and

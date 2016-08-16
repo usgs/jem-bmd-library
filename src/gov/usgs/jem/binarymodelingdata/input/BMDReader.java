@@ -7,12 +7,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import gov.usgs.jem.binarymodelingdata.BMDHeader;
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
-import gov.usgs.jem.binarymodelingdata.Concentration;
-import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -50,6 +44,13 @@ import com.google.common.collect.Table.Cell;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
+
+import gov.usgs.jem.binarymodelingdata.BMDHeader;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
+import gov.usgs.jem.binarymodelingdata.Concentration;
+import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 /**
  * Reads WASP BMD output files. Based on clsBMD.vb @
@@ -212,9 +213,9 @@ public class BMDReader
 		public ConcentrationsQuery withAllSegments()
 		{
 			m_qSegments.clear();
-			m_qSegments.addAll(ContiguousSet.create(
-					Range.closedOpen(0, m_Segments.size()),
-					DiscreteDomain.integers()).asList());
+			m_qSegments.addAll(
+					ContiguousSet.create(Range.closedOpen(0, m_Segments.size()),
+							DiscreteDomain.integers()).asList());
 			return this;
 		}
 
@@ -242,14 +243,16 @@ public class BMDReader
 		public ConcentrationsQuery withAllVariables()
 		{
 			m_qVariables.clear();
-			m_qVariables.addAll(ContiguousSet.create(
-					Range.closedOpen(0, m_Variables.size()),
-					DiscreteDomain.integers()).asList());
+			m_qVariables.addAll(ContiguousSet
+					.create(Range.closedOpen(0, m_Variables.size()),
+							DiscreteDomain.integers())
+					.asList());
 			return this;
 		}
 
 		@Override
-		public ConcentrationsQuery withProgress(final IProgressMonitor p_Monitor)
+		public ConcentrationsQuery withProgress(
+				final IProgressMonitor p_Monitor)
 		{
 			m_Monitor.clear();
 			m_Monitor.add(p_Monitor);
@@ -304,7 +307,7 @@ public class BMDReader
 	 * Class logger
 	 */
 	private static org.apache.log4j.Logger	log					= org.apache.log4j.Logger
-																		.getLogger(BMDReader.class);
+			.getLogger(BMDReader.class);
 
 	/**
 	 * Number of bytes representing segment names (15 single-octet chars)
@@ -415,9 +418,10 @@ public class BMDReader
 			throws IOException
 	{
 		checkNotNull(p_FilePath, "File path required.");
-		checkArgument(Objects.equal("bmd", Files.getFileExtension(p_FilePath)
-				.toLowerCase()), "BMD file required, but got %s instead",
-				p_FilePath);
+		checkArgument(
+				Objects.equal("bmd",
+						Files.getFileExtension(p_FilePath).toLowerCase()),
+				"BMD file required, but got %s instead", p_FilePath);
 		final BMDReader bmdReader = new BMDReader(p_FilePath);
 		bmdReader.readHeader();
 		return bmdReader;
@@ -685,9 +689,10 @@ public class BMDReader
 		validate();
 		try
 		{
-			return checkNotNull(m_MaxOverVars.get(checkNotNull(p_VariableName,
-					"Variable name required.")), "No value exists for '%s'",
-					p_VariableName);
+			return checkNotNull(
+					m_MaxOverVars.get(checkNotNull(p_VariableName,
+							"Variable name required.")),
+					"No value exists for '%s'", p_VariableName);
 		}
 		catch (final NullPointerException e)
 		{
@@ -711,9 +716,10 @@ public class BMDReader
 		validate();
 		try
 		{
-			return checkNotNull(m_MinOverVars.get(checkNotNull(p_VariableName,
-					"Variable name required.")), "No value exists for '%s'",
-					p_VariableName);
+			return checkNotNull(
+					m_MinOverVars.get(checkNotNull(p_VariableName,
+							"Variable name required.")),
+					"No value exists for '%s'", p_VariableName);
 		}
 		catch (final NullPointerException e)
 		{
@@ -860,7 +866,8 @@ public class BMDReader
 		int skipBytes = 0;
 		for (int timeNum = 0; timeNum < m_Header.getTimesSize(); timeNum++)
 		{
-			for (int segmentNum = 0; segmentNum < m_Header.getSegmentsSize(); segmentNum++)
+			for (int segmentNum = 0; segmentNum < m_Header
+					.getSegmentsSize(); segmentNum++)
 			{
 				for (int variableNum = 0; variableNum < m_Header
 						.getVariablesSize(); variableNum++)
@@ -870,8 +877,7 @@ public class BMDReader
 					{
 						final int skippedBytes = m_DIS
 								.skipBytesAggressive(skipBytes);
-						checkState(
-								skippedBytes == skipBytes,
+						checkState(skippedBytes == skipBytes,
 								"Unable to continue reading from the file (tried to skip %s bytes, but could only skip %s)",
 								skipBytes, skippedBytes);
 
@@ -914,40 +920,37 @@ public class BMDReader
 			}
 		}
 
-		final ImmutableList<BMDVariable> variables = ImmutableList
-				.copyOf(Iterables.filter(m_Variables,
-						new Predicate<BMDVariable>()
-						{
+		final ImmutableList<BMDVariable> variables = ImmutableList.copyOf(
+				Iterables.filter(m_Variables, new Predicate<BMDVariable>()
+				{
 
-							@Override
-							public boolean apply(final BMDVariable p_Input)
-							{
-								return results.containsRow(p_Input);
-							}
-						}));
+					@Override
+					public boolean apply(final BMDVariable p_Input)
+					{
+						return results.containsRow(p_Input);
+					}
+				}));
 		final ImmutableList<BMDSegment> segments = ImmutableList
-				.copyOf(Iterables.filter(m_Segments,
-						new Predicate<BMDSegment>()
-						{
+				.copyOf(Iterables.filter(m_Segments, new Predicate<BMDSegment>()
+				{
 
-							@Override
-							public boolean apply(final BMDSegment p_Input)
-							{
-								return results.containsColumn(p_Input);
-							}
-						}));
-		final ImmutableList<BMDTimeStep> timeSteps = ImmutableList
-				.copyOf(Iterables.filter(m_TimeSteps,
-						new Predicate<BMDTimeStep>()
-						{
+					@Override
+					public boolean apply(final BMDSegment p_Input)
+					{
+						return results.containsColumn(p_Input);
+					}
+				}));
+		final ImmutableList<BMDTimeStep> timeSteps = ImmutableList.copyOf(
+				Iterables.filter(m_TimeSteps, new Predicate<BMDTimeStep>()
+				{
 
-							@Override
-							public boolean apply(final BMDTimeStep p_Input)
-							{
-								return p_Query.m_qTimeSteps.contains(p_Input
-										.getIndex());
-							}
-						}));
+					@Override
+					public boolean apply(final BMDTimeStep p_Input)
+					{
+						return p_Query.m_qTimeSteps
+								.contains(p_Input.getIndex());
+					}
+				}));
 
 		return new Concentrations()
 		{
@@ -958,8 +961,8 @@ public class BMDReader
 				checkArgument(results.contains(p_Variable, p_Segment),
 						"Invalid variable (%s) or segment (%s) name.",
 						p_Variable, p_Segment);
-				final SortedMap<BMDTimeStep, Float> timeMap = results.get(
-						p_Variable, p_Segment);
+				final SortedMap<BMDTimeStep, Float> timeMap = results
+						.get(p_Variable, p_Segment);
 				checkArgument(timeMap.containsKey(p_TimeStep),
 						"Invalid time step: %s", p_TimeStep);
 				final Float value = timeMap.get(p_TimeStep);
@@ -1004,8 +1007,7 @@ public class BMDReader
 					 * @since Apr 23, 2014
 					 */
 					final Iterator<Cell<BMDVariable, BMDSegment, SortedMap<BMDTimeStep, Float>>>	m_CellIterator	= results
-																															.cellSet()
-																															.iterator();
+							.cellSet().iterator();
 
 					/**
 					 * Time steps and values iterator
@@ -1173,7 +1175,8 @@ public class BMDReader
 			/**
 			 * Read variable names and units
 			 */
-			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			for (int variableNum = 0; variableNum < m_Header
+					.getVariablesSize(); variableNum++)
 			{
 				final String variableName = new String(
 						m_DIS.readCharsAsAscii(VARIABLE_NAME_SIZE)).trim();
@@ -1197,19 +1200,20 @@ public class BMDReader
 			 */
 			m_ConcentrationsLocation = BMDHeader.LOCATION_VARIABLES
 					+ (long) m_Header.getVariablesSize()
-					* (VARIABLE_NAME_SIZE + VARIABLE_UNIT_SIZE);
+							* (VARIABLE_NAME_SIZE + VARIABLE_UNIT_SIZE);
 			m_TimesLocation = m_ConcentrationsLocation
 					+ (long) m_Header.getVariablesSize()
-					* m_Header.getSegmentsSize() * m_Header.getTimesSize()
-					* CONCENTRATIONS_SIZE;
+							* m_Header.getSegmentsSize()
+							* m_Header.getTimesSize() * CONCENTRATIONS_SIZE;
 			m_MinMaxOverVarsLocation = m_TimesLocation
 					+ (long) m_Header.getTimesSize() * TIMESTAMP_SIZE;
 			m_MinMaxOverVarSegsLocation = m_MinMaxOverVarsLocation
 					+ (long) m_Header.getVariablesSize() * CONCENTRATIONS_SIZE
-					* 2;
+							* 2;
 			m_SegmentNamesLocation = m_MinMaxOverVarSegsLocation
 					+ (long) m_Header.getVariablesSize()
-					* m_Header.getSegmentsSize() * CONCENTRATIONS_SIZE * 2;
+							* m_Header.getSegmentsSize() * CONCENTRATIONS_SIZE
+							* 2;
 			log.debug(MoreObjects.toStringHelper("Locations: ")
 					.add("concs", m_ConcentrationsLocation)
 					.add("times", m_TimesLocation)
@@ -1225,7 +1229,8 @@ public class BMDReader
 			/**
 			 * Read min/max
 			 */
-			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			for (int variableNum = 0; variableNum < m_Header
+					.getVariablesSize(); variableNum++)
 			{
 				final String variableName = m_Variables.get(variableNum)
 						.getName();
@@ -1241,7 +1246,8 @@ public class BMDReader
 			 */
 			final Map<String, List<Float>> minOverVarSegs = Maps.newHashMap();
 			final Map<String, List<Float>> maxOverVarSegs = Maps.newHashMap();
-			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			for (int variableNum = 0; variableNum < m_Header
+					.getVariablesSize(); variableNum++)
 			{
 				final String variableName = m_Variables.get(variableNum)
 						.getName();
@@ -1274,8 +1280,8 @@ public class BMDReader
 					final BMDSegmentImpl segment = new BMDSegmentImpl(
 							segmentNum, segmentName);
 					m_Segments.add(segment);
-					log.debug(String.format("Segment #%s: '%s'",
-							segmentNum + 1, segmentName));
+					log.debug(String.format("Segment #%s: '%s'", segmentNum + 1,
+							segmentName));
 				}
 			}
 			catch (final Exception e)
@@ -1291,8 +1297,8 @@ public class BMDReader
 					final BMDSegmentImpl segment = new BMDSegmentImpl(
 							segmentNum, segmentName);
 					m_Segments.add(segment);
-					log.debug(String.format("Segment #%s: '%s'",
-							segmentNum + 1, segmentName));
+					log.debug(String.format("Segment #%s: '%s'", segmentNum + 1,
+							segmentName));
 				}
 			}
 
@@ -1310,8 +1316,8 @@ public class BMDReader
 			if (!m_Segments.isEmpty())
 			{
 				final Splitter splitter = Splitter.on("=");
-				List<String> splitToList = splitter.splitToList(m_Segments.get(
-						0).getName());
+				List<String> splitToList = splitter
+						.splitToList(m_Segments.get(0).getName());
 				boolean doFormat = splitToList.size() >= 2
 						&& splitToList.size() <= 3;
 				if (doFormat)
@@ -1330,8 +1336,8 @@ public class BMDReader
 						}
 						// int i = Integer.valueOf(segmentName.substring(2,
 						// 2+3));
-						final Integer j = Integer.valueOf(segment.getName()
-								.substring(8, 8 + 3));
+						final Integer j = Integer
+								.valueOf(segment.getName().substring(8, 8 + 3));
 						if (j < lastJ)
 						{
 							kMax++;
@@ -1356,19 +1362,18 @@ public class BMDReader
 						{
 							continue;
 						}
-						final Integer i = Integer.valueOf(segmentName
-								.substring(2, 2 + 3));
-						final Integer j = Integer.valueOf(segmentName
-								.substring(8, 8 + 3));
+						final Integer i = Integer
+								.valueOf(segmentName.substring(2, 2 + 3));
+						final Integer j = Integer
+								.valueOf(segmentName.substring(8, 8 + 3));
 						if (j < lastJ)
 						{
 							k--;
 							lastJ = j;
-							m_Segments.set(
+							m_Segments.set(segmentNum, new BMDSegmentImpl(
 									segmentNum,
-									new BMDSegmentImpl(segmentNum, String
-											.format("I=%03dJ=%03dK=%03d", i, j,
-													k).trim()));
+									String.format("I=%03dJ=%03dK=%03d", i, j, k)
+											.trim()));
 						}
 					}
 				}
@@ -1377,7 +1382,8 @@ public class BMDReader
 			/**
 			 * Update the min/max per segment now that we have segment names.
 			 */
-			for (int variableNum = 0; variableNum < m_Header.getVariablesSize(); variableNum++)
+			for (int variableNum = 0; variableNum < m_Header
+					.getVariablesSize(); variableNum++)
 			{
 				final String variableName = m_Variables.get(variableNum)
 						.getName();
@@ -1428,8 +1434,8 @@ public class BMDReader
 			log.debug(String.format("Dates (first, last): (%s, %s)",
 					dateFormatUTC
 							.format(new Date(m_TimeSteps.get(0).getTime())),
-					dateFormatUTC.format(new Date(Iterables
-							.getLast(m_TimeSteps).getTime()))));
+					dateFormatUTC.format(new Date(
+							Iterables.getLast(m_TimeSteps).getTime()))));
 		}
 		catch (final Throwable t)
 		{
