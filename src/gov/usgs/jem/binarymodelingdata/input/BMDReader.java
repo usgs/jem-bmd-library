@@ -77,7 +77,7 @@ import gov.usgs.jem.binarymodelingdata.Concentrations;
  * @since Apr 17, 2014
  *
  */
-public class BMDReader
+public final class BMDReader
 {
 	/**
 	 * Query class for getting concentrations data.

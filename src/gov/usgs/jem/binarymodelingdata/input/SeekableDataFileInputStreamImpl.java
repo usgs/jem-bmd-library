@@ -25,7 +25,7 @@ import com.google.common.io.LittleEndianDataInputStream;
  * @since Apr 21, 2014
  *
  */
-class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
+final class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 {
 	/**
 	 * Endianness that controls the type of {@link DataInput} initialized

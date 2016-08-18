@@ -16,7 +16,7 @@ import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
  * @since Apr 28, 2014
  *
  */
-class BMDTimeStepImpl implements BMDTimeStep
+final class BMDTimeStepImpl implements BMDTimeStep
 {
 	/**
 	 * Index at which this appears in the file.

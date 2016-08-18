@@ -16,7 +16,7 @@ import gov.usgs.jem.binarymodelingdata.BMDSegment;
  * @since Apr 28, 2014
  *
  */
-class BMDSegmentImpl implements BMDSegment
+final class BMDSegmentImpl implements BMDSegment
 {
 	/**
 	 * Index at which this appears in the file.

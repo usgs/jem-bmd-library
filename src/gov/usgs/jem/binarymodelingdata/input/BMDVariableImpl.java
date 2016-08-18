@@ -16,7 +16,7 @@ import gov.usgs.jem.binarymodelingdata.BMDVariable;
  * @since Apr 28, 2014
  *
  */
-class BMDVariableImpl implements BMDVariable
+final class BMDVariableImpl implements BMDVariable
 {
 	/**
 	 * Index at which this appears in the file.
