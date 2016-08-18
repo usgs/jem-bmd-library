@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link BMDTimeStepImpl}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,21 @@ public class BMDTimeStepImplTest
 {
 
 	/**
-	 * TODO
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = BMDTimeStepImpl.class;
+		final Class<?> testingClass = BMDTimeStepImplTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +46,7 @@ public class BMDTimeStepImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +57,7 @@ public class BMDTimeStepImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,16 +67,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#BMDTimeStepImpl(int, java.lang.Long, double)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#BMDTimeStepImpl(int, java.lang.Long, double)}.
 	 */
 	@Test
 	public final void testBMDTimeStepImpl()
@@ -77,7 +77,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDTimeStep)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDTimeStep)}.
 	 */
 	@Test
 	public final void testCompareTo()
@@ -86,7 +87,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#equals(java.lang.Object)}.
 	 */
 	@Test
 	public final void testEqualsObject()
@@ -95,7 +97,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getIndex()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getIndex()}.
 	 */
 	@Test
 	public final void testGetIndex()
@@ -104,7 +107,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getTime()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getTime()}.
 	 */
 	@Test
 	public final void testGetTime()
@@ -113,7 +117,8 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getValue()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#getValue()}.
 	 */
 	@Test
 	public final void testGetValue()
@@ -122,10 +127,11 @@ public class BMDTimeStepImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#toString()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#hashCode()}.
 	 */
 	@Test
-	public final void testToString()
+	public final void testHashCode()
 	{
 		fail("Not yet implemented"); // TODO
 	}

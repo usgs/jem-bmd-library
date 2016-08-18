@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link SeekableDataFileInputStreamImpl}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,22 @@ public class SeekableDataFileInputStreamImplTest
 {
 
 	/**
-	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = SeekableDataFileInputStreamImpl.class;
+		final Class<?> testingClass = SeekableDataFileInputStreamImplTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +47,7 @@ public class SeekableDataFileInputStreamImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +58,7 @@ public class SeekableDataFileInputStreamImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,16 +68,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#close()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#close()}.
 	 */
 	@Test
 	public final void testClose()
@@ -77,70 +78,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#getByteOrder()}.
-	 */
-	@Test
-	public final void testGetByteOrder()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#getFilePath()}.
-	 */
-	@Test
-	public final void testGetFilePath()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readCharsAsAscii(int)}.
-	 */
-	@Test
-	public final void testReadCharsAsAscii()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUInt32()}.
-	 */
-	@Test
-	public final void testReadUInt32()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#seek(int)}.
-	 */
-	@Test
-	public final void testSeek()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#skipBytesAggressive(int)}.
-	 */
-	@Test
-	public final void testSkipBytesAggressive()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#SeekableDataFileInputStreamImpl(java.lang.String, java.nio.ByteOrder)}.
-	 */
-	@Test
-	public final void testSeekableDataFileInputStreamImpl()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#equals(java.lang.Object)}.
 	 */
 	@Test
 	public final void testEqualsObject()
@@ -149,7 +88,38 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readBoolean()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#getByteOrder()}.
+	 */
+	@Test
+	public final void testGetByteOrder()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#getFilePath()}.
+	 */
+	@Test
+	public final void testGetFilePath()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#hashCode()}.
+	 */
+	@Test
+	public final void testHashCode()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readBoolean()}.
 	 */
 	@Test
 	public final void testReadBoolean()
@@ -158,7 +128,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readByte()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readByte()}.
 	 */
 	@Test
 	public final void testReadByte()
@@ -167,7 +138,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readChar()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readChar()}.
 	 */
 	@Test
 	public final void testReadChar()
@@ -176,7 +148,18 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readDouble()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readCharsAsAscii(int)}.
+	 */
+	@Test
+	public final void testReadCharsAsAscii()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readDouble()}.
 	 */
 	@Test
 	public final void testReadDouble()
@@ -185,7 +168,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFloat()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFloat()}.
 	 */
 	@Test
 	public final void testReadFloat()
@@ -194,7 +178,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFully(byte[])}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFully(byte[])}.
 	 */
 	@Test
 	public final void testReadFullyByteArray()
@@ -203,7 +188,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFully(byte[], int, int)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readFully(byte[], int, int)}.
 	 */
 	@Test
 	public final void testReadFullyByteArrayIntInt()
@@ -212,7 +198,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readInt()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readInt()}.
 	 */
 	@Test
 	public final void testReadInt()
@@ -221,7 +208,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readLine()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readLine()}.
 	 */
 	@Test
 	public final void testReadLine()
@@ -230,7 +218,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readLong()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readLong()}.
 	 */
 	@Test
 	public final void testReadLong()
@@ -239,7 +228,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readShort()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readShort()}.
 	 */
 	@Test
 	public final void testReadShort()
@@ -248,7 +238,18 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUnsignedByte()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUInt32()}.
+	 */
+	@Test
+	public final void testReadUInt32()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUnsignedByte()}.
 	 */
 	@Test
 	public final void testReadUnsignedByte()
@@ -257,7 +258,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUnsignedShort()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUnsignedShort()}.
 	 */
 	@Test
 	public final void testReadUnsignedShort()
@@ -266,7 +268,8 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUTF()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#readUTF()}.
 	 */
 	@Test
 	public final void testReadUTF()
@@ -275,7 +278,28 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#skipBytes(int)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#seek(int)}.
+	 */
+	@Test
+	public final void testSeek()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#SeekableDataFileInputStreamImpl(java.lang.String, java.nio.ByteOrder)}.
+	 */
+	@Test
+	public final void testSeekableDataFileInputStreamImpl()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#skipBytes(int)}.
 	 */
 	@Test
 	public final void testSkipBytes()
@@ -284,10 +308,11 @@ public class SeekableDataFileInputStreamImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#toString()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImpl#skipBytesAggressive(int)}.
 	 */
 	@Test
-	public final void testToString()
+	public final void testSkipBytesAggressive()
 	{
 		fail("Not yet implemented"); // TODO
 	}

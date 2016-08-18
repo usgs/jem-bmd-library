@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link BMDReader}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,20 @@ public class BMDReaderTest
 {
 
 	/**
-	 * TODO
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = BMDReader.class;
+		final Class<?> testingClass = BMDReaderTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +45,7 @@ public class BMDReaderTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +56,7 @@ public class BMDReaderTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,7 +66,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#abbreviate(java.lang.Object[])}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#abbreviate(java.lang.Object[])}.
 	 */
 	@Test
 	public final void testAbbreviate()
@@ -68,25 +76,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#open(java.lang.String)}.
-	 */
-	@Test
-	public final void testOpen()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#openDebug(java.lang.String)}.
-	 */
-	@Test
-	public final void testOpenDebug()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#close()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#close()}.
 	 */
 	@Test
 	public final void testClose()
@@ -95,7 +86,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getFilePath()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getFilePath()}.
 	 */
 	@Test
 	public final void testGetFilePath()
@@ -104,7 +96,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getHeader()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getHeader()}.
 	 */
 	@Test
 	public final void testGetHeader()
@@ -113,7 +106,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getSeedDate()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getSeedDate()}.
 	 */
 	@Test
 	public final void testGetSeedDate()
@@ -122,7 +116,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getSegments()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getSegments()}.
 	 */
 	@Test
 	public final void testGetSegments()
@@ -131,7 +126,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getTimeSteps()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getTimeSteps()}.
 	 */
 	@Test
 	public final void testGetTimeSteps()
@@ -140,7 +136,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableMax(java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableMax(java.lang.String)}.
 	 */
 	@Test
 	public final void testGetVariableMax()
@@ -149,7 +146,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableMin(java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableMin(java.lang.String)}.
 	 */
 	@Test
 	public final void testGetVariableMin()
@@ -158,7 +156,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariables()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariables()}.
 	 */
 	@Test
 	public final void testGetVariables()
@@ -167,7 +166,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableSegmentMax(java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableSegmentMax(java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	public final void testGetVariableSegmentMax()
@@ -176,7 +176,8 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableSegmentMin(java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#getVariableSegmentMin(java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	public final void testGetVariableSegmentMin()
@@ -185,10 +186,31 @@ public class BMDReaderTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#newConcentrationsQuery()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#newConcentrationsQuery()}.
 	 */
 	@Test
 	public final void testNewConcentrationsQuery()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#open(java.lang.String)}.
+	 */
+	@Test
+	public final void testOpen()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#openDebug(java.lang.String)}.
+	 */
+	@Test
+	public final void testOpenDebug()
 	{
 		fail("Not yet implemented"); // TODO
 	}

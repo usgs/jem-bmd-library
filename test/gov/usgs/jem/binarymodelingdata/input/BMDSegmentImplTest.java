@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link BMDSegmentImpl}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,21 @@ public class BMDSegmentImplTest
 {
 
 	/**
-	 * TODO
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = BMDSegmentImpl.class;
+		final Class<?> testingClass = BMDSegmentImplTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +46,7 @@ public class BMDSegmentImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +57,7 @@ public class BMDSegmentImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,16 +67,8 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#BMDSegmentImpl(int, java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#BMDSegmentImpl(int, java.lang.String)}.
 	 */
 	@Test
 	public final void testBMDSegmentImpl()
@@ -77,7 +77,8 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDSegment)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDSegment)}.
 	 */
 	@Test
 	public final void testCompareTo()
@@ -86,7 +87,8 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#equals(java.lang.Object)}.
 	 */
 	@Test
 	public final void testEqualsObject()
@@ -95,7 +97,8 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#getIndex()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#getIndex()}.
 	 */
 	@Test
 	public final void testGetIndex()
@@ -104,7 +107,8 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#getName()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#getName()}.
 	 */
 	@Test
 	public final void testGetName()
@@ -113,10 +117,11 @@ public class BMDSegmentImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#toString()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDSegmentImpl#hashCode()}.
 	 */
 	@Test
-	public final void testToString()
+	public final void testHashCode()
 	{
 		fail("Not yet implemented"); // TODO
 	}

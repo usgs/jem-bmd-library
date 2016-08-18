@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link ConcentrationImpl}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,22 @@ public class ConcentrationImplTest
 {
 
 	/**
-	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = ConcentrationImpl.class;
+		final Class<?> testingClass = ConcentrationImplTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +47,7 @@ public class ConcentrationImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +58,7 @@ public class ConcentrationImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,25 +68,8 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#ConcentrationImpl(gov.usgs.jem.binarymodelingdata.BMDVariable, gov.usgs.jem.binarymodelingdata.BMDSegment, gov.usgs.jem.binarymodelingdata.BMDTimeStep, float)}.
-	 */
-	@Test
-	public final void testConcentrationImpl()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#compareTo(gov.usgs.jem.binarymodelingdata.Concentration)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#compareTo(gov.usgs.jem.binarymodelingdata.Concentration)}.
 	 */
 	@Test
 	public final void testCompareTo()
@@ -86,7 +78,18 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#ConcentrationImpl(gov.usgs.jem.binarymodelingdata.BMDVariable, gov.usgs.jem.binarymodelingdata.BMDSegment, gov.usgs.jem.binarymodelingdata.BMDTimeStep, float)}.
+	 */
+	@Test
+	public final void testConcentrationImpl()
+	{
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#equals(java.lang.Object)}.
 	 */
 	@Test
 	public final void testEqualsObject()
@@ -95,7 +98,8 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getSegment()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getSegment()}.
 	 */
 	@Test
 	public final void testGetSegment()
@@ -104,7 +108,8 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getTimeStep()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getTimeStep()}.
 	 */
 	@Test
 	public final void testGetTimeStep()
@@ -113,7 +118,8 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getValue()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getValue()}.
 	 */
 	@Test
 	public final void testGetValue()
@@ -122,7 +128,8 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getVariable()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#getVariable()}.
 	 */
 	@Test
 	public final void testGetVariable()
@@ -131,10 +138,11 @@ public class ConcentrationImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#toString()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.ConcentrationImpl#hashCode()}.
 	 */
 	@Test
-	public final void testToString()
+	public final void testHashCode()
 	{
 		fail("Not yet implemented"); // TODO
 	}

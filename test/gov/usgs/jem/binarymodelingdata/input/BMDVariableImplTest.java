@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+
 /**
- * TODO Describe
- * 
+ * Tests {@link BMDVariableImpl}
+ *
  * @author mckelvym
  * @since Aug 18, 2016
  *
@@ -19,17 +21,21 @@ public class BMDVariableImplTest
 {
 
 	/**
-	 * TODO
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
+		final Class<?> classToTest = BMDVariableImpl.class;
+		final Class<?> testingClass = BMDVariableImplTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+
 	}
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -40,6 +46,7 @@ public class BMDVariableImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -50,6 +57,7 @@ public class BMDVariableImplTest
 
 	/**
 	 * TODO
+	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
@@ -59,16 +67,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#hashCode()}.
-	 */
-	@Test
-	public final void testHashCode()
-	{
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#BMDVariableImpl(int, java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#BMDVariableImpl(int, java.lang.String, java.lang.String, java.lang.String)}.
 	 */
 	@Test
 	public final void testBMDVariableImpl()
@@ -77,7 +77,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDVariable)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#compareTo(gov.usgs.jem.binarymodelingdata.BMDVariable)}.
 	 */
 	@Test
 	public final void testCompareTo()
@@ -86,7 +87,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#equals(java.lang.Object)}.
 	 */
 	@Test
 	public final void testEqualsObject()
@@ -95,7 +97,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getIndex()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getIndex()}.
 	 */
 	@Test
 	public final void testGetIndex()
@@ -104,7 +107,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getName()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getName()}.
 	 */
 	@Test
 	public final void testGetName()
@@ -113,7 +117,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getPCode()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getPCode()}.
 	 */
 	@Test
 	public final void testGetPCode()
@@ -122,7 +127,8 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getUnits()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getUnits()}.
 	 */
 	@Test
 	public final void testGetUnits()
@@ -131,10 +137,11 @@ public class BMDVariableImplTest
 	}
 
 	/**
-	 * Test method for {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#toString()}.
+	 * Test method for
+	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#hashCode()}.
 	 */
 	@Test
-	public final void testToString()
+	public final void testHashCode()
 	{
 		fail("Not yet implemented"); // TODO
 	}
