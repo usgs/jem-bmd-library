@@ -7,16 +7,28 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import gov.usgs.jem.binarymodelingdata.input.BMDReaderTest;
+import gov.usgs.jem.binarymodelingdata.input.BMDSegmentImplTest;
+import gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImplTest;
+import gov.usgs.jem.binarymodelingdata.input.BMDVariableImplTest;
+import gov.usgs.jem.binarymodelingdata.input.ConcentrationImplTest;
+import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImplTest;
+import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamTest;
+
 /**
- * Tests all cases.
+ * Tests all cases
  *
  * @author mckelvym
  * @since Aug 18, 2016
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ BMDHeaderTest.class })
-public final class AllTests
+@SuiteClasses({ BMDHeaderTest.class, BMDReaderTest.class,
+		BMDSegmentImplTest.class, BMDTimeStepImplTest.class,
+		BMDVariableImplTest.class, ConcentrationImplTest.class,
+		SeekableDataFileInputStreamImplTest.class,
+		SeekableDataFileInputStreamTest.class })
+public class AllTests
 {
 	/**
 	 * Ensure that a testing class has defined all required testing methods.
