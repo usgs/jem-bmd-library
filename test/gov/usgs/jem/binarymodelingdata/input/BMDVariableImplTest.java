@@ -1,14 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.fail;
-
-import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 
 /**
  * Tests {@link BMDVariableImpl}
@@ -19,7 +17,6 @@ import gov.usgs.jem.binarymodelingdata.AllTests;
  */
 public class BMDVariableImplTest
 {
-
 	/**
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
@@ -33,19 +30,46 @@ public class BMDVariableImplTest
 
 	}
 
-	/**
-	 * TODO
-	 *
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception
+	private final int		m_Index;
+	private final String	m_Name;
+	private final String	m_PCode;
+	private final String	m_Units;
+	private BMDVariable		m_Val;
+
 	{
+		m_Name = "Name";
+		m_Units = "Units";
+		m_PCode = "PCode";
+		m_Index = 0;
 	}
 
 	/**
-	 * TODO
+	 * Creates one or more scenarios to compare the equality of two objects.
+	 *
+	 * @param p_TestEquals
+	 *            should test that the two provided objects are equal, either
+	 *            via the {@link Object#equals(Object)} method or by comparing
+	 *            their {@link Object#hashCode()} values.
+	 * @param p_TestNotEqual
+	 *            should test that the two provided objects are <b>NOT</b>
+	 *            equal, either via the {@link Object#equals(Object)} method or
+	 *            by comparing their {@link Object#hashCode()} values.
+	 * @throws Exception
+	 * @since Aug 18, 2016
+	 */
+	private void equalityTests(
+			final java.util.function.BiConsumer<Object, Object> p_TestEquals,
+			final java.util.function.BiConsumer<Object, Object> p_TestNotEqual)
+			throws Exception
+	{
+		p_TestEquals.accept(m_Val, m_Val);
+		p_TestEquals.accept(m_Val,
+				new BMDVariableImpl(m_Index, m_Name, m_Units, m_PCode));
+		p_TestNotEqual.accept(m_Val,
+				new BMDVariableImpl(m_Index + 1, m_Name, m_Units, m_PCode));
+	}
+
+	/**
 	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
@@ -53,27 +77,7 @@ public class BMDVariableImplTest
 	@Before
 	public void setUp() throws Exception
 	{
-	}
-
-	/**
-	 * TODO
-	 *
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@After
-	public void tearDown() throws Exception
-	{
-	}
-
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#BMDVariableImpl(int, java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public final void testBMDVariableImpl()
-	{
-		fail("Not yet implemented"); // TODO
+		m_Val = new BMDVariableImpl(m_Index, m_Name, m_Units, m_PCode);
 	}
 
 	/**
@@ -83,27 +87,39 @@ public class BMDVariableImplTest
 	@Test
 	public final void testCompareTo()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertTrue(m_Val.compareTo(
+				new BMDVariableImpl(m_Index, m_Name, m_Units, m_PCode)) == 0);
+		Assert.assertTrue(m_Val.compareTo(new BMDVariableImpl(m_Index + 1,
+				m_Name, m_Units, m_PCode)) < 0);
+		Assert.assertTrue(m_Val.compareTo(new BMDVariableImpl(m_Index - 1,
+				m_Name, m_Units, m_PCode)) > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#equals(java.lang.Object)}.
-	 */
 	@Test
-	public final void testEqualsObject()
+	public final void testEquals() throws Exception
 	{
-		fail("Not yet implemented"); // TODO
+		final java.util.function.BiConsumer<Object, Object> testEquals = (same,
+				alsosame) ->
+		{
+			org.junit.Assert.assertEquals(same, alsosame);
+		};
+		final java.util.function.BiConsumer<Object, Object> testNotEqual = (one,
+				two) ->
+		{
+			org.junit.Assert.assertNotEquals(one, two);
+		};
+		equalityTests(testEquals, testNotEqual);
 	}
 
 	/**
-	 * Test method for
+	 *
+	 * /** Test method for
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#getIndex()}.
 	 */
 	@Test
 	public final void testGetIndex()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_Index, m_Val.getIndex());
 	}
 
 	/**
@@ -113,7 +129,7 @@ public class BMDVariableImplTest
 	@Test
 	public final void testGetName()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_Name, m_Val.getName());
 	}
 
 	/**
@@ -123,7 +139,7 @@ public class BMDVariableImplTest
 	@Test
 	public final void testGetPCode()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_PCode, m_Val.getPCode());
 	}
 
 	/**
@@ -133,17 +149,23 @@ public class BMDVariableImplTest
 	@Test
 	public final void testGetUnits()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_Units, m_Val.getUnits());
 	}
 
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDVariableImpl#hashCode()}.
-	 */
 	@Test
-	public final void testHashCode()
+	public final void testHashCode() throws Exception
 	{
-		fail("Not yet implemented"); // TODO
+		final java.util.function.BiConsumer<Object, Object> testEquals = (same,
+				alsosame) ->
+		{
+			org.junit.Assert.assertEquals(same.hashCode(), alsosame.hashCode());
+		};
+		final java.util.function.BiConsumer<Object, Object> testNotEqual = (one,
+				two) ->
+		{
+			org.junit.Assert.assertNotEquals(one.hashCode(), two.hashCode());
+		};
+		equalityTests(testEquals, testNotEqual);
 	}
 
 }
