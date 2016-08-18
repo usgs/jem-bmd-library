@@ -1,6 +1,6 @@
 package gov.usgs.jem.binarymodelingdata;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
 
 /**
  * Container for a collection of {@link Concentration}.
@@ -35,7 +35,7 @@ public interface Concentrations extends Iterable<Concentration>
 	 * @return the segments in this container
 	 * @since Apr 23, 2014
 	 */
-	ImmutableList<BMDSegment> getSegments();
+	List<BMDSegment> getSegments();
 
 	/**
 	 * Get the time steps in this container
@@ -43,7 +43,7 @@ public interface Concentrations extends Iterable<Concentration>
 	 * @return the time steps in this container
 	 * @since Apr 23, 2014
 	 */
-	ImmutableList<BMDTimeStep> getTimeSteps();
+	List<BMDTimeStep> getTimeSteps();
 
 	/**
 	 * Get the variables in this container
@@ -51,5 +51,5 @@ public interface Concentrations extends Iterable<Concentration>
 	 * @return the variables in this container
 	 * @since Apr 23, 2014
 	 */
-	ImmutableList<BMDVariable> getVariables();
+	List<BMDVariable> getVariables();
 }

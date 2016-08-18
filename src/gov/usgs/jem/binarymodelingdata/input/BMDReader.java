@@ -645,7 +645,7 @@ public final class BMDReader
 	 * @return the list of segments
 	 * @since Apr 23, 2014
 	 */
-	public ImmutableList<BMDSegment> getSegments()
+	public List<BMDSegment> getSegments()
 	{
 		validate();
 		return ImmutableList.copyOf(m_Segments);
@@ -658,7 +658,7 @@ public final class BMDReader
 	 * @return the 0-based timestep indices
 	 * @since Apr 22, 2014
 	 */
-	private ImmutableList<Integer> getTimeStepIndices()
+	private List<Integer> getTimeStepIndices()
 	{
 		validate();
 		return ContiguousSet.create(Range.closedOpen(0, m_TimeSteps.size()),
@@ -672,7 +672,7 @@ public final class BMDReader
 	 * @return the list of time steps
 	 * @since Apr 23, 2014
 	 */
-	public ImmutableList<BMDTimeStep> getTimeSteps()
+	public List<BMDTimeStep> getTimeSteps()
 	{
 		validate();
 		return ImmutableList.copyOf(m_TimeSteps);
@@ -739,7 +739,7 @@ public final class BMDReader
 	 * @return the list of variables
 	 * @since Apr 23, 2014
 	 */
-	public ImmutableList<BMDVariable> getVariables()
+	public List<BMDVariable> getVariables()
 	{
 		validate();
 		return ImmutableList.copyOf(m_Variables);
@@ -926,7 +926,7 @@ public final class BMDReader
 			}
 		}
 
-		final ImmutableList<BMDVariable> variables = ImmutableList.copyOf(
+		final List<BMDVariable> variables = ImmutableList.copyOf(
 				Iterables.filter(m_Variables, new Predicate<BMDVariable>()
 				{
 
@@ -936,7 +936,7 @@ public final class BMDReader
 						return results.containsRow(p_Input);
 					}
 				}));
-		final ImmutableList<BMDSegment> segments = ImmutableList
+		final List<BMDSegment> segments = ImmutableList
 				.copyOf(Iterables.filter(m_Segments, new Predicate<BMDSegment>()
 				{
 
@@ -946,7 +946,7 @@ public final class BMDReader
 						return results.containsColumn(p_Input);
 					}
 				}));
-		final ImmutableList<BMDTimeStep> timeSteps = ImmutableList.copyOf(
+		final List<BMDTimeStep> timeSteps = ImmutableList.copyOf(
 				Iterables.filter(m_TimeSteps, new Predicate<BMDTimeStep>()
 				{
 
@@ -977,19 +977,19 @@ public final class BMDReader
 			}
 
 			@Override
-			public ImmutableList<BMDSegment> getSegments()
+			public List<BMDSegment> getSegments()
 			{
 				return segments;
 			}
 
 			@Override
-			public ImmutableList<BMDTimeStep> getTimeSteps()
+			public List<BMDTimeStep> getTimeSteps()
 			{
 				return timeSteps;
 			}
 
 			@Override
-			public ImmutableList<BMDVariable> getVariables()
+			public List<BMDVariable> getVariables()
 			{
 				return variables;
 			}
