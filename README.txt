@@ -24,13 +24,13 @@ Use the Maven tool in the root of this project:
  * http://www.oracle.com/technetwork/java/javase/downloads/index.html
  * https://maven.apache.org/
 
-This library can be compiled as an Eclipse-plugin using Maven with Tycho using the following command:
-
-$ mvn install 
-
 This library can be compiled as JAR file with the following command:
 
 $ mvn install -P packaging-jar
+
+JavaDocs can be generated with the following command:
+
+$ mvn javadoc:javadoc -P packaging-jar
 
 Example Maven build results for JAR packaging:
 
