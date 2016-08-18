@@ -1,10 +1,10 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
+
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 
 /**
  * Implements {@link BMDTimeStep} including {@link #hashCode()} and
@@ -45,6 +45,9 @@ class BMDTimeStepImpl implements BMDTimeStep
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_TimeMS
+	 *            the milleseconds timestamp
+	 * @param p_RawValue
+	 *            the raw value read from the file
 	 * @since Apr 28, 2014
 	 */
 	public BMDTimeStepImpl(final int p_Index, final Long p_TimeMS,

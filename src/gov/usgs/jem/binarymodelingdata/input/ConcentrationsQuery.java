@@ -1,14 +1,14 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
-import gov.usgs.jem.binarymodelingdata.Concentrations;
-
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
+import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 /**
  * Query class for getting concentrations data. See
@@ -27,6 +27,7 @@ public interface ConcentrationsQuery
 	 *
 	 * @return the results of the query.
 	 * @throws IOException
+	 *             if the query could not be successfully executed
 	 * @since Apr 22, 2014
 	 */
 	Concentrations execute() throws IOException;
@@ -35,6 +36,7 @@ public interface ConcentrationsQuery
 	 * Checks that the query is ready for {@link #execute()}
 	 *
 	 * @throws IllegalStateException
+	 *             if the query is not properly formed
 	 * @since Apr 22, 2014
 	 */
 	void validate() throws IllegalStateException;
@@ -76,7 +78,7 @@ public interface ConcentrationsQuery
 	/**
 	 * Add the segments to the query.
 	 *
-	 * @param p_SegmentNames
+	 * @param p_Segments
 	 *            the {@link BMDSegment}(s) to add to the query
 	 * @return this
 	 * @since May 16, 2014

@@ -1,19 +1,19 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.ComparisonChain;
+
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ComparisonChain;
-
 /**
  * Package-private implementation of {@link Concentration}
- * 
+ *
  * @author mckelvym
  * @since Apr 23, 2014
- * 
+ *
  */
 final class ConcentrationImpl implements Concentration
 {
@@ -43,7 +43,7 @@ final class ConcentrationImpl implements Concentration
 
 	/**
 	 * Create a new instance for the provided parameters
-	 * 
+	 *
 	 * @param p_Variable
 	 *            variable
 	 * @param p_Segment

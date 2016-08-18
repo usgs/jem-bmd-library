@@ -1,10 +1,10 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
+
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
 
 /**
  * Implements {@link BMDSegment} including {@link #hashCode()} and
@@ -38,6 +38,7 @@ class BMDSegmentImpl implements BMDSegment
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_SegmentName
+	 *            the segment name
 	 * @since Apr 28, 2014
 	 */
 	public BMDSegmentImpl(final int p_Index, final String p_SegmentName)

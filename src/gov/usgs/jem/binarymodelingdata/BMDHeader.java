@@ -334,7 +334,8 @@ public final class BMDHeader
 	/**
 	 * The old seed time field.
 	 *
-	 * "this is for older BMD files that used a single unsigned long value relative to 1/1/1970 but may have problems with DST"
+	 * "this is for older BMD files that used a single unsigned long value
+	 * relative to 1/1/1970 but may have problems with DST"
 	 *
 	 * @since Apr 17, 2014
 	 */
@@ -350,7 +351,8 @@ public final class BMDHeader
 	/**
 	 * The julian seed day field.
 	 *
-	 * "the following are a new representation of the seed time that is based on the julian day and second"
+	 * "the following are a new representation of the seed time that is based on
+	 * the julian day and second"
 	 *
 	 * @since Apr 17, 2014
 	 */
@@ -359,7 +361,8 @@ public final class BMDHeader
 	/**
 	 * The seed second field
 	 *
-	 * "the following are a new representation of the seed time that is based on the julian day and second"
+	 * "the following are a new representation of the seed time that is based on
+	 * the julian day and second"
 	 *
 	 * @since Apr 17, 2014
 	 */
@@ -403,6 +406,8 @@ public final class BMDHeader
 	/**
 	 * Create a new header instance from the provided builder.
 	 *
+	 * @param p_Builder
+	 *            the {@link Builder} to take initialization from
 	 * @since Apr 17, 2014
 	 */
 	private BMDHeader(final Builder p_Builder)
@@ -450,7 +455,8 @@ public final class BMDHeader
 				SPACE_SIZE);
 
 		condition = m_NumSegments >= 0;
-		checkArgument(condition, "Number of segments field must be at least 0.");
+		checkArgument(condition,
+				"Number of segments field must be at least 0.");
 
 		condition = m_NumTimes >= 0;
 		checkArgument(condition, "Number of times field must be at least 0.");
@@ -613,24 +619,19 @@ public final class BMDHeader
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName()
-				+ "\n"
-				+ Joiner.on("\n").join(
-						Splitter.on(",").splitToList(
-								MoreObjects.toStringHelper("")
-										.add("signature", m_Signature)
-										.add("sourceType", m_SourceType)
-										.add("producer", m_Producer)
-										.add("version", m_Version)
-										.add("oldSeedTime", m_OldSeedTime)
-										.add("seedSecond", m_SeedSecond)
-										.add("seedJDay", m_SeedJDay)
-										.add("spaces", m_Spaces)
-										.add("numSegments", m_NumSegments)
-										.add("numTimes", m_NumTimes)
-										.add("numVariables", m_NumVars)
-										.add("startTime", m_StartTime)
-										.add("endTime", m_EndTime).toString()));
+		return getClass().getSimpleName() + "\n"
+				+ Joiner.on("\n").join(Splitter.on(",").splitToList(MoreObjects
+						.toStringHelper("").add("signature", m_Signature)
+						.add("sourceType", m_SourceType)
+						.add("producer", m_Producer).add("version", m_Version)
+						.add("oldSeedTime", m_OldSeedTime)
+						.add("seedSecond", m_SeedSecond)
+						.add("seedJDay", m_SeedJDay).add("spaces", m_Spaces)
+						.add("numSegments", m_NumSegments)
+						.add("numTimes", m_NumTimes)
+						.add("numVariables", m_NumVars)
+						.add("startTime", m_StartTime).add("endTime", m_EndTime)
+						.toString()));
 	}
 
 }

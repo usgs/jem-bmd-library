@@ -1,10 +1,10 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
+
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 
 /**
  * Implements {@link BMDVariable} including {@link #hashCode()} and
@@ -50,6 +50,7 @@ class BMDVariableImpl implements BMDVariable
 	 * @param p_Index
 	 *            Index at which this appears in the file.
 	 * @param p_VariableName
+	 *            the variable name
 	 * @param p_Units
 	 *            variable units
 	 * @param p_PCode
