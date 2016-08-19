@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ import com.google.common.collect.Table.Cell;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
+import com.google.common.primitives.UnsignedInteger;
 
 import gov.usgs.jem.binarymodelingdata.BMDHeader;
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
@@ -77,7 +79,7 @@ import gov.usgs.jem.binarymodelingdata.Concentrations;
  * @since Apr 17, 2014
  *
  */
-public final class BMDReader
+public final class BMDReader implements Closeable
 {
 	/**
 	 * Query class for getting concentrations data.
@@ -586,6 +588,7 @@ public final class BMDReader
 	 *             failed
 	 * @since Apr 25, 2014
 	 */
+	@Override
 	public void close() throws IOException
 	{
 		try
@@ -1084,7 +1087,8 @@ public final class BMDReader
 			final String sourceType = new String(m_DIS.readCharsAsAscii(1));
 			final String producer = new String(m_DIS.readCharsAsAscii(1));
 			final float version = m_DIS.readFloat();
-			final int oldSeedTime = m_DIS.readUInt32();
+			final long oldSeedTime = UnsignedInteger
+					.fromIntBits(m_DIS.readUInt32()).longValue();
 			final int seedSecond = m_DIS.readInt();
 			final int seedJDay = m_DIS.readInt();
 			final String spaces = new String(
@@ -1160,7 +1164,8 @@ public final class BMDReader
 				cal.set(Calendar.SECOND, 0);
 				cal.set(Calendar.MILLISECOND, 0);
 
-				cal.add(Calendar.SECOND, oldSeedTime);
+				cal.setTimeInMillis(
+						cal.getTimeInMillis() + oldSeedTime * 1000L);
 			}
 			else
 			{
