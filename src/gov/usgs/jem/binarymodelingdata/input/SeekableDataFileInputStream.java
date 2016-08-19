@@ -22,8 +22,34 @@ import com.google.common.io.LittleEndianDataInputStream;
  * @since Apr 21, 2014
  *
  */
-public abstract class SeekableDataFileInputStream implements DataInput
+public interface SeekableDataFileInputStream extends DataInput
 {
+	/**
+	 * Close the input
+	 *
+	 * @throws IOException
+	 *             if the stream could not be closed
+	 *
+	 * @since Apr 21, 2014
+	 */
+	void close() throws IOException;
+
+	/**
+	 * Get the endianness
+	 *
+	 * @return the {@link ByteOrder}
+	 * @since Apr 21, 2014
+	 */
+	ByteOrder getByteOrder();
+
+	/**
+	 * Get the file path being read from
+	 *
+	 * @return the file path being read from.
+	 * @since Apr 21, 2014
+	 */
+	String getFilePath();
+
 	/**
 	 * Create a new {@link SeekableDataFileInputStream} using the provided file
 	 * path and endianness.
@@ -37,37 +63,11 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * @return a new {@link SeekableDataFileInputStream} instance
 	 * @since Apr 21, 2014
 	 */
-	public static SeekableDataFileInputStream open(final String p_FilePath,
+	default SeekableDataFileInputStream open(final String p_FilePath,
 			final ByteOrder p_ByteOrder) throws IOException
 	{
 		return new SeekableDataFileInputStreamImpl(p_FilePath, p_ByteOrder);
 	}
-
-	/**
-	 * Close the input
-	 *
-	 * @throws IOException
-	 *             if the stream could not be closed
-	 *
-	 * @since Apr 21, 2014
-	 */
-	public abstract void close() throws IOException;
-
-	/**
-	 * Get the endianness
-	 *
-	 * @return the {@link ByteOrder}
-	 * @since Apr 21, 2014
-	 */
-	public abstract ByteOrder getByteOrder();
-
-	/**
-	 * Get the file path being read from
-	 *
-	 * @return the file path being read from.
-	 * @since Apr 21, 2014
-	 */
-	public abstract String getFilePath();
 
 	/**
 	 * Reads <b>one</b> input byte per char and returns p_Count char values.
@@ -81,8 +81,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 *             an error occurred while attempting to read from the file
 	 * @since Apr 21, 2014
 	 */
-	public abstract char[] readCharsAsAscii(final int p_Count)
-			throws IOException;
+	char[] readCharsAsAscii(final int p_Count) throws IOException;
 
 	/**
 	 * Reads an unsigned integer (4-bytes) into a java signed integer (4-bytes).
@@ -92,7 +91,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 *             an error occurred while attempting to read from the file
 	 * @since Apr 21, 2014
 	 */
-	public abstract int readUInt32() throws IOException;
+	int readUInt32() throws IOException;
 
 	/**
 	 * Sets the file-pointer offset, measured from the beginning of this file,
@@ -108,7 +107,7 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 *             another I/O error occurs.
 	 * @since Apr 21, 2014
 	 */
-	public abstract int seek(int p_Position) throws IOException;
+	int seek(int p_Position) throws IOException;
 
 	/**
 	 * Makes an attempt to skip over <code>p_Count</code> bytes of data from the
@@ -125,5 +124,5 @@ public abstract class SeekableDataFileInputStream implements DataInput
 	 * @exception IOException
 	 *                if an I/O error occurs.
 	 */
-	public abstract int skipBytesAggressive(int p_Count) throws IOException;
+	int skipBytesAggressive(int p_Count) throws IOException;
 }

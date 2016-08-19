@@ -15,7 +15,6 @@ import gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImplTest;
 import gov.usgs.jem.binarymodelingdata.input.BMDVariableImplTest;
 import gov.usgs.jem.binarymodelingdata.input.ConcentrationImplTest;
 import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImplTest;
-import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamTest;
 
 /**
  * Tests all cases
@@ -28,8 +27,7 @@ import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamTest;
 @SuiteClasses({ BMDHeaderTest.class, BMDReaderTest.class,
 		BMDSegmentImplTest.class, BMDTimeStepImplTest.class,
 		BMDVariableImplTest.class, ConcentrationImplTest.class,
-		SeekableDataFileInputStreamImplTest.class,
-		SeekableDataFileInputStreamTest.class })
+		SeekableDataFileInputStreamImplTest.class, })
 public class AllTests
 {
 	/**
