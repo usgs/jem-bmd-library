@@ -37,7 +37,7 @@ final class BMDTimeStepImpl implements BMDTimeStep
 	 *
 	 * @since Apr 28, 2014
 	 */
-	private final Long		m_TimeMS;
+	private final long		m_TimeMS;
 
 	/**
 	 * Create a new instance for the provided time value in ms.
@@ -50,7 +50,7 @@ final class BMDTimeStepImpl implements BMDTimeStep
 	 *            the raw value read from the file
 	 * @since Apr 28, 2014
 	 */
-	public BMDTimeStepImpl(final int p_Index, final Long p_TimeMS,
+	public BMDTimeStepImpl(final int p_Index, final long p_TimeMS,
 			final double p_RawValue)
 	{
 		m_Index = p_Index;
