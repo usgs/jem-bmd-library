@@ -1,5 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import com.google.common.io.LittleEndianDataInputStream;
  * @since Apr 21, 2014
  *
  */
-public interface SeekableDataFileInputStream extends DataInput
+public interface SeekableDataFileInputStream extends DataInput, Closeable
 {
 	/**
 	 * Close the input
@@ -32,6 +33,7 @@ public interface SeekableDataFileInputStream extends DataInput
 	 *
 	 * @since Apr 21, 2014
 	 */
+	@Override
 	void close() throws IOException;
 
 	/**
