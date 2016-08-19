@@ -142,9 +142,11 @@ final class SeekableDataFileInputStreamImpl
 		{
 			return false;
 		}
-		final SeekableDataFileInputStreamImpl o = SeekableDataFileInputStreamImpl.class
-				.cast(p_Obj);
-		return Objects.equal(m_DataInputStream, o.m_DataInputStream);
+		return Objects.equal(m_ByteOrder,
+				SeekableDataFileInputStreamImpl.class.cast(p_Obj).m_ByteOrder)
+				&& Objects.equal(m_FilePath,
+						SeekableDataFileInputStreamImpl.class
+								.cast(p_Obj).m_FilePath);
 	}
 
 	@Override
@@ -162,7 +164,7 @@ final class SeekableDataFileInputStreamImpl
 	@Override
 	public int hashCode()
 	{
-		return Objects.hashCode(m_DataInputStream);
+		return Objects.hashCode(m_ByteOrder, m_FilePath);
 	}
 
 	/**
