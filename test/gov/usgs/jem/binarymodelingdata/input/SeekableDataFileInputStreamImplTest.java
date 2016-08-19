@@ -45,6 +45,7 @@ public class SeekableDataFileInputStreamImplTest
 	/**
 	 *
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 19, 2016
 	 */
 	@BeforeClass
@@ -126,6 +127,7 @@ public class SeekableDataFileInputStreamImplTest
 
 	/**
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 19, 2016
 	 */
 	@Before
@@ -153,6 +155,7 @@ public class SeekableDataFileInputStreamImplTest
 
 	/**
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 19, 2016
 	 */
 	@After

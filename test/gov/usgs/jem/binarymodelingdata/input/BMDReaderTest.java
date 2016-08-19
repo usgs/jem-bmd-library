@@ -38,6 +38,7 @@ public class BMDReaderTest
 
 	/**
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
@@ -55,6 +56,7 @@ public class BMDReaderTest
 	/**
 	 *
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
 	 */
 	@Before
@@ -68,6 +70,7 @@ public class BMDReaderTest
 	/**
 	 *
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
 	 */
 	@After
@@ -81,6 +84,7 @@ public class BMDReaderTest
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#close()}.
 	 *
 	 * @throws IOException
+	 *             unable to close
 	 */
 	@Test
 	public final void testClose() throws IOException
@@ -258,6 +262,7 @@ public class BMDReaderTest
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#newConcentrationsQuery()}.
 	 *
 	 * @throws IOException
+	 *             unable to close
 	 */
 	@Test
 	public final void testNewConcentrationsQuery() throws IOException

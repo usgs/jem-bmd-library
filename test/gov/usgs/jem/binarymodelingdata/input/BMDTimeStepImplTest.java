@@ -23,6 +23,7 @@ public class BMDTimeStepImplTest
 
 	/**
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
 	 */
 	@BeforeClass
@@ -73,6 +74,7 @@ public class BMDTimeStepImplTest
 
 	/**
 	 * @throws java.lang.Exception
+	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
 	 */
 	@Before
