@@ -24,21 +24,7 @@ public class BMDHeaderTest
 		r = new Random(System.currentTimeMillis());
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception
-	{
-		final Class<?> classToTest = BMDHeader.class;
-		final Class<?> testingClass = BMDHeaderTest.class;
-		AllTests.assertHasRequiredMethods(classToTest, testingClass);
-	}
-
-	private BMDHeader.Builder m_Builder;
-
-	private void expectFailure(final BMDHeader.Builder p_Builder)
+	private static void expectFailure(final BMDHeader.Builder p_Builder)
 	{
 		try
 		{
@@ -52,6 +38,20 @@ public class BMDHeaderTest
 			 */
 		}
 	}
+
+	/**
+	 * @throws java.lang.Exception
+	 * @since Aug 18, 2016
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception
+	{
+		final Class<?> classToTest = BMDHeader.class;
+		final Class<?> testingClass = BMDHeaderTest.class;
+		AllTests.assertHasRequiredMethods(classToTest, testingClass);
+	}
+
+	private BMDHeader.Builder m_Builder;
 
 	/**
 	 * @throws java.lang.Exception
