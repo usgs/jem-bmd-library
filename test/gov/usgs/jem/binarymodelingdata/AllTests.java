@@ -1,5 +1,7 @@
 package gov.usgs.jem.binarymodelingdata;
 
+import java.io.File;
+
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -60,6 +62,15 @@ public class AllTests
 		{
 			Assert.fail(e.getMessage());
 		}
+	}
+
+	/**
+	 * @return the test file to use
+	 * @since Aug 19, 2016
+	 */
+	public static final File getTestFile()
+	{
+		return new File("test/data/Sampleq.BMD");
 	}
 
 	@BeforeClass
