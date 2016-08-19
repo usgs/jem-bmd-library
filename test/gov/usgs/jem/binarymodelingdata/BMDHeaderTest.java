@@ -43,6 +43,34 @@ public class BMDHeaderTest
 	}
 
 	/**
+	 * @return the next random unsigned int value
+	 * @since Aug 19, 2016
+	 */
+	private static int nextUInt()
+	{
+		int v = r.nextInt();
+		while (v < 0)
+		{
+			v = r.nextInt();
+		}
+		return v;
+	}
+
+	/**
+	 * @return the next random unsigned long value
+	 * @since Aug 19, 2016
+	 */
+	private static long nextULong()
+	{
+		long v = r.nextLong();
+		while (v < 0)
+		{
+			v = r.nextLong();
+		}
+		return v;
+	}
+
+	/**
 	 * @throws java.lang.Exception
 	 *             if unexpected condition causing test failure
 	 * @since Aug 18, 2016
@@ -111,7 +139,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetOldSeedTime() throws Exception
 	{
-		final long v = Math.abs(r.nextLong());
+		final long v = nextULong();
 		Assert.assertEquals(v,
 				m_Builder.withOldSeedTime(v).build().getOldSeedTime());
 
@@ -144,7 +172,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetSeedJDay() throws Exception
 	{
-		final int v = Math.abs(r.nextInt());
+		final int v = nextUInt();
 		Assert.assertEquals(v, m_Builder.withSeedJDay(v).build().getSeedJDay());
 
 		expectFailure(m_Builder.withSeedJDay(-1));
@@ -159,7 +187,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetSeedSecond() throws Exception
 	{
-		final int v = Math.abs(r.nextInt());
+		final int v = nextUInt();
 		Assert.assertEquals(v,
 				m_Builder.withSeedSecond(v).build().getSeedSecond());
 
@@ -175,7 +203,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetSegmentsSize() throws Exception
 	{
-		final int v = Math.abs(r.nextInt());
+		final int v = nextUInt();
 		Assert.assertEquals(v,
 				m_Builder.withNumSegments(v).build().getSegmentsSize());
 
@@ -261,7 +289,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetTimesSize() throws Exception
 	{
-		final int v = Math.abs(r.nextInt());
+		final int v = nextUInt();
 		Assert.assertEquals(v,
 				m_Builder.withNumTimes(v).build().getTimesSize());
 
@@ -277,7 +305,7 @@ public class BMDHeaderTest
 	@Test
 	public final void testGetVariablesSize() throws Exception
 	{
-		final int v = Math.abs(r.nextInt());
+		final int v = nextUInt();
 		Assert.assertEquals(v,
 				m_Builder.withNumVars(v).build().getVariablesSize());
 
