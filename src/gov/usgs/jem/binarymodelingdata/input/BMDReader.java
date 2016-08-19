@@ -351,7 +351,7 @@ public final class BMDReader implements Closeable
 	 *         array
 	 * @since Dec 9, 2013
 	 */
-	public static String[] abbreviate(final Object[] p_Array)
+	private static String[] abbreviate(final Object[] p_Array)
 	{
 		if (p_Array == null)
 		{
@@ -591,17 +591,20 @@ public final class BMDReader implements Closeable
 	@Override
 	public void close() throws IOException
 	{
-		try
+		if (m_DIS != null)
 		{
-			m_DIS.close();
-		}
-		catch (final IOException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			m_DIS = null;
+			try
+			{
+				m_DIS.close();
+			}
+			catch (final IOException e)
+			{
+				throw e;
+			}
+			finally
+			{
+				m_DIS = null;
+			}
 		}
 	}
 
