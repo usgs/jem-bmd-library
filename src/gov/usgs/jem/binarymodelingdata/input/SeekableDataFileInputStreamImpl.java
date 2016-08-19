@@ -2,7 +2,6 @@ package gov.usgs.jem.binarymodelingdata.input;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import java.io.BufferedInputStream;
 import java.io.DataInput;
@@ -307,7 +306,6 @@ final class SeekableDataFileInputStreamImpl extends SeekableDataFileInputStream
 
 		final ByteBuffer byteBuffer = ByteBuffer.wrap(b).order(m_ByteOrder);
 		final int uint = byteBuffer.getInt();
-		checkState(uint >= 0, "Overflow when casting to signed integer.");
 		return uint;
 	}
 
