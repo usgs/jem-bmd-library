@@ -1,16 +1,29 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.fail;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.common.collect.Sets;
+
 import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDHeader;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
+import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 /**
  * Tests {@link BMDReader}
@@ -35,19 +48,11 @@ public class BMDReaderTest
 		AllTests.assertHasRequiredMethods(classToTest, testingClass);
 	}
 
-	/**
-	 * TODO
-	 *
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception
-	{
-	}
+	private double		m_MaxTime;
+	private double		m_MinTime;
+	private BMDReader	m_Reader;
 
 	/**
-	 * TODO
 	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
@@ -55,10 +60,12 @@ public class BMDReaderTest
 	@Before
 	public void setUp() throws Exception
 	{
+		m_Reader = BMDReader.open(AllTests.getTestFile().getAbsolutePath());
+		m_MinTime = 169.00;
+		m_MaxTime = 171.71;
 	}
 
 	/**
-	 * TODO
 	 *
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
@@ -66,26 +73,19 @@ public class BMDReaderTest
 	@After
 	public void tearDown() throws Exception
 	{
-	}
-
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#abbreviate(java.lang.Object[])}.
-	 */
-	@Test
-	public final void testAbbreviate()
-	{
-		fail("Not yet implemented"); // TODO
+		m_Reader.close();
 	}
 
 	/**
 	 * Test method for
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#close()}.
+	 *
+	 * @throws IOException
 	 */
 	@Test
-	public final void testClose()
+	public final void testClose() throws IOException
 	{
-		fail("Not yet implemented"); // TODO
+		m_Reader.close();
 	}
 
 	/**
@@ -95,7 +95,8 @@ public class BMDReaderTest
 	@Test
 	public final void testGetFilePath()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(AllTests.getTestFile().getAbsolutePath(),
+				m_Reader.getFilePath());
 	}
 
 	/**
@@ -105,7 +106,33 @@ public class BMDReaderTest
 	@Test
 	public final void testGetHeader()
 	{
-		fail("Not yet implemented"); // TODO
+		final BMDHeader header = m_Reader.getHeader();
+		Assert.assertNotNull(header);
+		final double endTime = header.getEndTime();
+		final long oldSeedTime = header.getOldSeedTime();
+		final String producer = header.getProducer();
+		final int seedJDay = header.getSeedJDay();
+		final int seedSecond = header.getSeedSecond();
+		final int segmentsSize = header.getSegmentsSize();
+		final String signature = header.getSignature();
+		final String sourceType = header.getSourceType();
+		final double startTime = header.getStartTime();
+		final int timesSize = header.getTimesSize();
+		final int variablesSize = header.getVariablesSize();
+		final float version = header.getVersion();
+
+		Assert.assertEquals(m_MaxTime, endTime, Double.MIN_NORMAL);
+		Assert.assertEquals(3060997200L, oldSeedTime);
+		Assert.assertEquals("\t", producer);
+		Assert.assertEquals(0, seedJDay);
+		Assert.assertEquals(0, seedSecond);
+		Assert.assertEquals(40, segmentsSize);
+		Assert.assertEquals("BMD", signature);
+		Assert.assertEquals(new String(new byte[] { 0x0F }), sourceType);
+		Assert.assertEquals(m_MinTime, startTime, Double.MIN_NORMAL);
+		Assert.assertEquals(66, timesSize);
+		Assert.assertEquals(17, variablesSize);
+		Assert.assertEquals(2.0, version, Float.MIN_NORMAL);
 	}
 
 	/**
@@ -115,7 +142,11 @@ public class BMDReaderTest
 	@Test
 	public final void testGetSeedDate()
 	{
-		fail("Not yet implemented"); // TODO
+		final Calendar instance = Calendar.getInstance();
+		instance.set(1997, 11, 31, 0, 0);
+		instance.set(Calendar.SECOND, 0);
+		instance.set(Calendar.MILLISECOND, 0);
+		Assert.assertEquals(instance.getTime(), m_Reader.getSeedDate());
 	}
 
 	/**
@@ -125,7 +156,17 @@ public class BMDReaderTest
 	@Test
 	public final void testGetSegments()
 	{
-		fail("Not yet implemented"); // TODO
+		final List<BMDSegment> segments = m_Reader.getSegments();
+		final int numSegments = 40;
+		Assert.assertEquals(numSegments, segments.size());
+
+		final Set<String> expecteds = Sets.newHashSet();
+		IntStream.range(1, numSegments + 1)
+				.mapToObj(x -> String.format("Seg %s", x))
+				.forEach(expecteds::add);
+		final Set<String> actuals = segments.stream().map(BMDSegment::getName)
+				.collect(Collectors.toSet());
+		expecteds.forEach(x -> Assert.assertTrue(actuals.contains(x)));
 	}
 
 	/**
@@ -135,7 +176,16 @@ public class BMDReaderTest
 	@Test
 	public final void testGetTimeSteps()
 	{
-		fail("Not yet implemented"); // TODO
+		final List<BMDTimeStep> timesteps = m_Reader.getTimeSteps();
+		final int numTimesteps = 66;
+		Assert.assertEquals(numTimesteps, timesteps.size());
+
+		final DoubleSummaryStatistics summaryStatistics = timesteps.stream()
+				.mapToDouble(BMDTimeStep::getValue).summaryStatistics();
+		Assert.assertEquals(m_MinTime, summaryStatistics.getMin(),
+				Double.MIN_NORMAL);
+		Assert.assertEquals(m_MaxTime, summaryStatistics.getMax(),
+				Double.MIN_NORMAL);
 	}
 
 	/**
@@ -145,7 +195,8 @@ public class BMDReaderTest
 	@Test
 	public final void testGetVariableMax()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(27.79, m_Reader.getVariableMax("Distance (mi)"),
+				0.01);
 	}
 
 	/**
@@ -155,7 +206,8 @@ public class BMDReaderTest
 	@Test
 	public final void testGetVariableMin()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(0.0, m_Reader.getVariableMin("ALGAE"),
+				Float.MIN_NORMAL);
 	}
 
 	/**
@@ -165,7 +217,17 @@ public class BMDReaderTest
 	@Test
 	public final void testGetVariables()
 	{
-		fail("Not yet implemented"); // TODO
+		final List<BMDVariable> variables = m_Reader.getVariables();
+		final int numVariables = 17;
+		Assert.assertEquals(numVariables, variables.size());
+
+		final Set<String> expecteds = Sets.newHashSet("ALGAE", "COLIFORM BACT",
+				"DO", "FE", "MN", "PO4", "ORGANIC-P", "NO3-N", "NH3-N",
+				"Organic N", "CBODNS", "Temperature", "Hydraulic Depth",
+				"Flow (cfs)", "Velocity (ft/se", "Stage (ft)", "Distance (mi)");
+		final Set<String> actuals = variables.stream().map(BMDVariable::getName)
+				.collect(Collectors.toSet());
+		expecteds.forEach(x -> Assert.assertTrue(actuals.contains(x)));
 	}
 
 	/**
@@ -175,7 +237,8 @@ public class BMDReaderTest
 	@Test
 	public final void testGetVariableSegmentMax()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(0.0,
+				m_Reader.getVariableSegmentMin("ALGAE", "Seg 16"), 0.001);
 	}
 
 	/**
@@ -185,37 +248,72 @@ public class BMDReaderTest
 	@Test
 	public final void testGetVariableSegmentMin()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(15.30,
+				m_Reader.getVariableSegmentMin("Distance (mi)", "Seg 16"),
+				0.00001);
 	}
 
 	/**
 	 * Test method for
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#newConcentrationsQuery()}.
+	 *
+	 * @throws IOException
 	 */
 	@Test
-	public final void testNewConcentrationsQuery()
+	public final void testNewConcentrationsQuery() throws IOException
 	{
-		fail("Not yet implemented"); // TODO
+		final ConcentrationsQuery query = m_Reader.newConcentrationsQuery();
+		Assert.assertNotNull(query);
+		final List<BMDSegment> segments = m_Reader.getSegments().stream()
+				.filter(x -> x.getIndex() == 0).collect(Collectors.toList());
+		final List<BMDTimeStep> timesteps = m_Reader.getTimeSteps().stream()
+				.filter(x -> x.getIndex() == 0).collect(Collectors.toList());
+		final List<BMDVariable> variables = m_Reader.getVariables().stream()
+				.filter(x -> x.getIndex() == 0).collect(Collectors.toList());
+		final Concentrations concentrations = query.withSegments(segments)
+				.withTimeSteps(timesteps).withVariables(variables).execute();
+		concentrations.forEach(x -> Assert.assertEquals(27.80f, x.getValue(),
+				Float.MIN_NORMAL));
 	}
 
 	/**
 	 * Test method for
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#open(java.lang.String)}.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public final void testOpen()
 	{
-		fail("Not yet implemented"); // TODO
+		try (BMDReader open = BMDReader
+				.open(AllTests.getTestFile().getAbsolutePath());)
+		{
+			Assert.assertNotNull(open);
+		}
+		catch (final Throwable t)
+		{
+			t.printStackTrace();
+			Assert.fail("Unable to open file.");
+		}
 	}
 
 	/**
 	 * Test method for
 	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDReader#openDebug(java.lang.String)}.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public final void testOpenDebug()
 	{
-		fail("Not yet implemented"); // TODO
+		try (BMDReader open = BMDReader
+				.openDebug(AllTests.getTestFile().getAbsolutePath());)
+		{
+			Assert.assertNotNull(open);
+		}
+		catch (final Throwable t)
+		{
+			t.printStackTrace();
+			Assert.fail("Unable to open file.");
+		}
 	}
 
 }
