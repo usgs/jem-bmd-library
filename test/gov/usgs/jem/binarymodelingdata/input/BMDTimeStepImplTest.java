@@ -1,14 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import static org.junit.Assert.fail;
-
-import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 
 /**
  * Tests {@link BMDTimeStepImpl}
@@ -33,47 +31,51 @@ public class BMDTimeStepImplTest
 
 	}
 
-	/**
-	 * TODO
-	 *
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception
+	private final int		m_Index;
+	private final double	m_RawValue;
+	private final long		m_TimeMS;
+	private BMDTimeStep		m_Val;
+
 	{
+		m_Index = 0;
+		m_TimeMS = 0L;
+		m_RawValue = 0.0;
 	}
 
 	/**
-	 * TODO
+	 * Creates one or more scenarios to compare the equality of two objects.
 	 *
+	 * @param p_TestEquals
+	 *            should test that the two provided objects are equal, either
+	 *            via the {@link Object#equals(Object)} method or by comparing
+	 *            their {@link Object#hashCode()} values.
+	 * @param p_TestNotEqual
+	 *            should test that the two provided objects are <b>NOT</b>
+	 *            equal, either via the {@link Object#equals(Object)} method or
+	 *            by comparing their {@link Object#hashCode()} values.
+	 * @throws Exception
+	 * @since Aug 19, 2016
+	 */
+	private void equalityTests(
+			final java.util.function.BiConsumer<Object, Object> p_TestEquals,
+			final java.util.function.BiConsumer<Object, Object> p_TestNotEqual)
+			throws Exception
+	{
+		p_TestEquals.accept(m_Val, m_Val);
+		p_TestEquals.accept(m_Val,
+				new BMDTimeStepImpl(m_Index, m_TimeMS, m_RawValue));
+		p_TestNotEqual.accept(m_Val,
+				new BMDTimeStepImpl(m_Index + 1, m_TimeMS, m_RawValue));
+	}
+
+	/**
 	 * @throws java.lang.Exception
 	 * @since Aug 18, 2016
 	 */
 	@Before
 	public void setUp() throws Exception
 	{
-	}
-
-	/**
-	 * TODO
-	 *
-	 * @throws java.lang.Exception
-	 * @since Aug 18, 2016
-	 */
-	@After
-	public void tearDown() throws Exception
-	{
-	}
-
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#BMDTimeStepImpl(int, java.lang.Long, double)}.
-	 */
-	@Test
-	public final void testBMDTimeStepImpl()
-	{
-		fail("Not yet implemented"); // TODO
+		m_Val = new BMDTimeStepImpl(m_Index, m_TimeMS, m_RawValue);
 	}
 
 	/**
@@ -83,17 +85,28 @@ public class BMDTimeStepImplTest
 	@Test
 	public final void testCompareTo()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertTrue(m_Val.compareTo(
+				new BMDTimeStepImpl(m_Index, m_TimeMS, m_RawValue)) == 0);
+		Assert.assertTrue(m_Val.compareTo(
+				new BMDTimeStepImpl(m_Index + 1, m_TimeMS, m_RawValue)) < 0);
+		Assert.assertTrue(m_Val.compareTo(
+				new BMDTimeStepImpl(m_Index - 1, m_TimeMS, m_RawValue)) > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#equals(java.lang.Object)}.
-	 */
 	@Test
-	public final void testEqualsObject()
+	public final void testEquals() throws Exception
 	{
-		fail("Not yet implemented"); // TODO
+		final java.util.function.BiConsumer<Object, Object> testEquals = (same,
+				alsosame) ->
+		{
+			org.junit.Assert.assertEquals(same, alsosame);
+		};
+		final java.util.function.BiConsumer<Object, Object> testNotEqual = (one,
+				two) ->
+		{
+			org.junit.Assert.assertNotEquals(one, two);
+		};
+		equalityTests(testEquals, testNotEqual);
 	}
 
 	/**
@@ -103,7 +116,7 @@ public class BMDTimeStepImplTest
 	@Test
 	public final void testGetIndex()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_Index, m_Val.getIndex());
 	}
 
 	/**
@@ -113,7 +126,7 @@ public class BMDTimeStepImplTest
 	@Test
 	public final void testGetTime()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_TimeMS, m_Val.getTime());
 	}
 
 	/**
@@ -123,17 +136,22 @@ public class BMDTimeStepImplTest
 	@Test
 	public final void testGetValue()
 	{
-		fail("Not yet implemented"); // TODO
+		Assert.assertEquals(m_RawValue, m_Val.getValue(), Double.MIN_NORMAL);
 	}
 
-	/**
-	 * Test method for
-	 * {@link gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImpl#hashCode()}.
-	 */
 	@Test
-	public final void testHashCode()
+	public final void testHashCode() throws Exception
 	{
-		fail("Not yet implemented"); // TODO
+		final java.util.function.BiConsumer<Object, Object> testEquals = (same,
+				alsosame) ->
+		{
+			org.junit.Assert.assertEquals(same.hashCode(), alsosame.hashCode());
+		};
+		final java.util.function.BiConsumer<Object, Object> testNotEqual = (one,
+				two) ->
+		{
+			org.junit.Assert.assertNotEquals(one.hashCode(), two.hashCode());
+		};
+		equalityTests(testEquals, testNotEqual);
 	}
-
 }
