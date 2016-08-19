@@ -3,7 +3,9 @@ package gov.usgs.jem.binarymodelingdata.input;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import gov.usgs.jem.binarymodelingdata.AllTests;
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
@@ -18,6 +20,7 @@ import gov.usgs.jem.binarymodelingdata.Concentration;
  * @since Aug 19, 2016
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConcentrationImplTest
 {
 
