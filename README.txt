@@ -74,4 +74,4 @@ $ mvn install -P packaging-jar
 [INFO] ------------------------------------------------------------------------
 
 Usage:
-BMDReader.open(p_FilePath)
+See examples/gov.usgs.jem.binarymodelingdata.example.Main
