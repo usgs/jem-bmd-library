@@ -1183,7 +1183,7 @@ public final class BMDReader implements Closeable
 			m_SeedDate = cal.getTime();
 			final SimpleDateFormat dateFormatUTC = new SimpleDateFormat(
 					"yyyy-MM-dd HH:mm:ss");
-			dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+			dateFormatUTC.setTimeZone(timeZone);
 			log.debug(String.format("Seed Date: %s",
 					dateFormatUTC.format(m_SeedDate)));
 

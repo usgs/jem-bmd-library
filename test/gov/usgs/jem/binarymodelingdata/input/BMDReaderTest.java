@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -146,7 +147,14 @@ public class BMDReaderTest
 	@Test
 	public final void testGetSeedDate()
 	{
+		/**
+		 * Note: seed date/reference date range was determined for this file by
+		 * installing the WRDB program from http://www.wrdb.com/ and using the
+		 * BMDUtil program. The application reports starting date as 06/18/1998
+		 * 05:00 and ending date as 06/20/1998 22:02
+		 */
 		final Calendar instance = Calendar.getInstance();
+		instance.setTimeZone(TimeZone.getTimeZone("EST"));
 		instance.set(1997, 11, 31, 0, 0);
 		instance.set(Calendar.SECOND, 0);
 		instance.set(Calendar.MILLISECOND, 0);
