@@ -29,7 +29,7 @@
 		<com.google.guava.version>19.0</com.google.guava.version>
 		<eclipse.version>4.6.0-SNAPSHOT</eclipse.version>
 		<org.apache.log4j.version>1.2.17</org.apache.log4j.version>
-		<org.eclipse.core.version>3.10.0-v20140318-2214</org.eclipse.core.version>
+		<org.eclipse.core.version>3.12.0.v20160606-1342</org.eclipse.core.version>
 		<org.junit.version>4.12</org.junit.version>
 		<org.junit.plugin.version>4.12.0</org.junit.plugin.version>
 		<tycho.version>0.25.0</tycho.version>
@@ -95,8 +95,8 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse.core</groupId>
-			<artifactId>runtime</artifactId>
+			<groupId>org.eclipse.scout.sdk.deps</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
 			<version>${org.eclipse.core.version}</version>
 		</dependency>
 		<dependency>
