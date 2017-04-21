@@ -3,18 +3,19 @@ package gov.usgs.jem.binarymodelingdata.input;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.io.LittleEndianDataInputStream;
+
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-import com.google.common.io.LittleEndianDataInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Package-private implementation of {@link SeekableDataFileInputStream},
@@ -197,7 +198,7 @@ final class SeekableDataFileInputStreamImpl
 		}
 
 		m_InputStream = new BufferedInputStream(
-				new FileInputStream(p_FilePath));
+				Files.newInputStream(Paths.get(p_FilePath)));
 		if (p_ByteOrder.equals(ByteOrder.BIG_ENDIAN))
 		{
 			final DataInputStream dIS = new DataInputStream(m_InputStream);
