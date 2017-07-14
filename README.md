@@ -1,7 +1,7 @@
 # JEM BMD Reader Library
-Joint Ecosystem Modeling (JEM)
-http://jem.usgs.gov
-JEM is a partnership among federal agencies (USGS/USFWS/NPS/USACE), universities and other organizations.
+Joint Ecosystem Modeling (JEM)  
+http://jem.usgs.gov  
+JEM is a partnership among federal agencies (USGS/USFWS/NPS/USACE), universities and other organizations.  
 
 [![Build Status](https://travis-ci.org/usgs/jem-bmd-library.svg?branch=master)](https://travis-ci.org/usgs/jem-bmd-library)
 
@@ -29,11 +29,11 @@ Use the Maven tool in the root of this project:
 
 This library can be compiled as JAR file with the following command:
 
-$ mvn install -P packaging-jar
+	$ mvn install -P packaging-jar
 
 JavaDocs can be generated with the following command:
 
-$ mvn javadoc:javadoc -P packaging-jar
+	$ mvn javadoc:javadoc -P packaging-jar
 
 ## Usage
 See examples/gov.usgs.jem.binarymodelingdata.example.Main
