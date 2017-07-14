@@ -1,6 +1,6 @@
 # JEM BMD Reader Library
 Joint Ecosystem Modeling (JEM)  
-http://jem.usgs.gov  
+https://jem.gov/  
 JEM is a partnership among federal agencies (USGS/USFWS/NPS/USACE), universities and other organizations.  
 
 [![Build Status](https://travis-ci.org/usgs/jem-bmd-library.svg?branch=master)](https://travis-ci.org/usgs/jem-bmd-library)
