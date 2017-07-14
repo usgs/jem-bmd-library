@@ -1,0 +1,20 @@
+language: java
+
+# Use container based builds. They are faster and we do not need sudo.
+sudo: false
+
+jdk:
+  - openjdk8
+  - oraclejdk8
+  
+dist: trusty
+
+script: 
+ - mvn -P packaging-jar clean
+ - mvn -P packaging-jar install
+ - mvn -P packaging-eclipse install   
+
+branches:
+  only:
+  - master
+  
