@@ -10,9 +10,7 @@ jdk:
 dist: trusty
 
 script: 
- - mvn -P packaging-jar clean
- - mvn -P packaging-jar install
- - mvn -P packaging-eclipse install   
+ - mvn -P packaging-jar clean install   
 
 branches:
   only:
