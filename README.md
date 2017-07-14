@@ -19,7 +19,7 @@ expressed or implied, is made by the USGS or the United States
 Government as to the accuracy and functioning of the program
 and related program material nor shall the fact of distribution
 constitute any such warranty, and no responsibility is assumed
-by the USGS in connection therewith.
+by the USGS in connection therewith. This software is provisional.
 
 ## Build
 To compile this application, ensure you have the Java SDK (JDK) installed and Maven. 
