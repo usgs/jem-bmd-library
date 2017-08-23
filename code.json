@@ -1,0 +1,49 @@
+[
+  {
+    "name": "jem-bmd-library",
+    "organization": "U.S. Geological Survey",
+    "description": "JEM BMD Reader Java library to read and query from Binary Modeling Data (BMD) output from EPA WASP model.",
+    "version": "1.0.0",
+    "status": "Beta",
+
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain, CC0-1.0",
+          "URL": "https://github.com/usgs/jem-bmd-library/blob/master/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://usgs.github.io/jem-bmd-library/",
+    "downloadURL": "https://github.com/usgs/jem-bmd-library/archive/master.zip",
+    "disclaimerURL": "https://github.com/usgs/jem-bmd-library/blob/master/LICENSE.md",
+    "repositoryUrl": "https://github.com/usgs/jem-bmd-library.git",
+    "vcs": "git",
+
+    "laborHours": null,
+
+    "tags": [
+      "Ecosystems",
+      "JEM",
+      "BMD",
+      "Binary Modeling Data",
+      "EPA",
+      "WASP"
+    ],
+
+    "languages": [
+      "Java"
+    ],
+
+    "contact": {
+      "name": "Mark McKelvy",
+      "email": "mckelvym@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2017-08-23"
+    }
+  }
+]
