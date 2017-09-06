@@ -27,7 +27,6 @@
 		<packaging.type>jar</packaging.type>
 
 		<com.google.guava.version>20.0</com.google.guava.version>
-		<eclipse.version>4.6.0-SNAPSHOT</eclipse.version>
 		<org.apache.log4j.version>1.2.17</org.apache.log4j.version>
 		<org.eclipse.core.version>3.12.0.v20160606-1342</org.eclipse.core.version>
 		<org.junit.version>4.12</org.junit.version>
@@ -65,13 +64,7 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<target>
-						<artifact>
-							<groupId>org.eclipse.download</groupId>
-							<artifactId>eclipse.updates</artifactId>
-							<version>${eclipse.version}</version>
-						</artifact>
-					</target>
+					
 					<environments>
 						<environment>
 							<os>win32</os>
