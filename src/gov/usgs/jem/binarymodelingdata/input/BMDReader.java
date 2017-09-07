@@ -22,7 +22,6 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 
 import org.apache.log4j.Level;
-import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -50,6 +49,7 @@ import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 import gov.usgs.jem.binarymodelingdata.Concentrations;
+import gov.usgs.jem.binarymodelingdata.IProgressMonitor;
 
 /**
  * Reads WASP BMD output files. Based on clsBMD.vb @

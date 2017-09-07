@@ -5,7 +5,7 @@
 
 	<groupId>gov.usgs.jem.bmdconverter.group</groupId>
 	<artifactId>gov.usgs.jem.binarymodelingdata</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>${packaging.type}</packaging>
 	<name>Binary Modeling Data Library Plug-in</name>
 	<profiles>
@@ -87,11 +87,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>org.eclipse.scout.sdk.deps</groupId>
-			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>${org.eclipse.core.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
