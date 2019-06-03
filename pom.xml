@@ -31,7 +31,7 @@
 		<org.eclipse.core.version>3.12.0.v20160606-1342</org.eclipse.core.version>
 		<org.junit.version>4.12</org.junit.version>
 		<org.junit.plugin.version>4.12.0</org.junit.plugin.version>
-		<tycho.version>1.1.0</tycho.version>
+		<tycho.version>1.4.0</tycho.version>
 	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
