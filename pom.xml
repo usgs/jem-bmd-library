@@ -5,7 +5,7 @@
 
 	<groupId>gov.usgs.jem.bmdconverter.group</groupId>
 	<artifactId>gov.usgs.jem.binarymodelingdata</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>${packaging.type}</packaging>
 	<name>Binary Modeling Data Library Plug-in</name>
 	<profiles>
