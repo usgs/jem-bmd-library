@@ -3,6 +3,7 @@
 ## 1.0.3 - 2020-08-14
  * Add Automatic-Module-Name
  * Minor changes to address compiler warnings
+ * Update guava to 29.0-jre (for real)
 
 ## 1.0.2 - 2020-06-15
  * Update tycho.version to 1.4.0
