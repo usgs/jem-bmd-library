@@ -1,5 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import com.google.common.collect.Sets;
+import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDHeader;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
+import gov.usgs.jem.binarymodelingdata.Concentrations;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.DoubleSummaryStatistics;
@@ -8,7 +15,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,15 +22,6 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import com.google.common.collect.Sets;
-
-import gov.usgs.jem.binarymodelingdata.AllTests;
-import gov.usgs.jem.binarymodelingdata.BMDHeader;
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
-import gov.usgs.jem.binarymodelingdata.Concentrations;
 
 /**
  * Tests {@link BMDReader}

@@ -5,24 +5,6 @@ import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TimeZone;
-
-import org.apache.log4j.Level;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
@@ -42,7 +24,6 @@ import com.google.common.collect.TreeBasedTable;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
 import com.google.common.primitives.UnsignedInteger;
-
 import gov.usgs.jem.binarymodelingdata.BMDHeader;
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
@@ -50,6 +31,22 @@ import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 import gov.usgs.jem.binarymodelingdata.Concentrations;
 import gov.usgs.jem.binarymodelingdata.IProgressMonitor;
+import java.io.Closeable;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TimeZone;
+import org.apache.log4j.Level;
 
 /**
  * Reads WASP BMD output files. Based on clsBMD.vb @

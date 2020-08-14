@@ -1,17 +1,16 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
+import gov.usgs.jem.binarymodelingdata.Concentration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import gov.usgs.jem.binarymodelingdata.AllTests;
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
-import gov.usgs.jem.binarymodelingdata.Concentration;
 
 /**
  * Tests {@link ConcentrationImpl}
@@ -171,6 +170,7 @@ public class ConcentrationImplTest
 		}
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -228,6 +228,7 @@ public class ConcentrationImplTest
 		Assert.assertEquals(m_Variable, m_Concentration.getVariable());
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

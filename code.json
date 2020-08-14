@@ -3,7 +3,7 @@
     "name": "jem-bmd-library",
     "organization": "U.S. Geological Survey",
     "description": "JEM BMD Reader Java library to read and query from Binary Modeling Data (BMD) output from EPA WASP model.",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "status": "Beta",
 
     "permissions": {
@@ -43,7 +43,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2020-06-15"
+      "metadataLastUpdated": "2020-08-14"
     }
   }
 ]

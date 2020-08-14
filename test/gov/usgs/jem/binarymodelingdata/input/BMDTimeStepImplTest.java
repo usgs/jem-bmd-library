@@ -1,14 +1,13 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import gov.usgs.jem.binarymodelingdata.AllTests;
-import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 
 /**
  * Tests {@link BMDTimeStepImpl}
@@ -98,6 +97,7 @@ public class BMDTimeStepImplTest
 				new BMDTimeStepImpl(m_Index - 1, m_TimeMS, m_RawValue)) > 0);
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -144,6 +144,7 @@ public class BMDTimeStepImplTest
 		Assert.assertEquals(m_RawValue, m_Val.getValue(), Double.MIN_NORMAL);
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

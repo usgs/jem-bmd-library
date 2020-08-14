@@ -1,7 +1,6 @@
 package gov.usgs.jem.binarymodelingdata;
 
 import java.util.Random;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,7 +33,7 @@ public class BMDHeaderTest
 			p_Builder.build();
 			Assert.fail("Not trapping bad input.");
 		}
-		catch (final Throwable t)
+		catch (@SuppressWarnings("unused") final Throwable t)
 		{
 			/**
 			 * Expected
