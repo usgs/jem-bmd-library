@@ -6,7 +6,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.io.LittleEndianDataInputStream;
-
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -132,6 +131,7 @@ final class SeekableDataFileInputStreamImpl
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public boolean equals(final Object p_Obj)
 	{

@@ -1,20 +1,18 @@
 package gov.usgs.jem.binarymodelingdata;
 
-import java.io.File;
-
-import org.apache.log4j.BasicConfigurator;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 import gov.usgs.jem.binarymodelingdata.input.BMDReaderTest;
 import gov.usgs.jem.binarymodelingdata.input.BMDSegmentImplTest;
 import gov.usgs.jem.binarymodelingdata.input.BMDTimeStepImplTest;
 import gov.usgs.jem.binarymodelingdata.input.BMDVariableImplTest;
 import gov.usgs.jem.binarymodelingdata.input.ConcentrationImplTest;
 import gov.usgs.jem.binarymodelingdata.input.SeekableDataFileInputStreamImplTest;
+import java.io.File;
+import org.apache.log4j.BasicConfigurator;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * Tests all cases
@@ -71,6 +69,7 @@ public class AllTests
 		return new File("test/data/Sampleq.BMD");
 	}
 
+	@SuppressWarnings("javadoc")
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{

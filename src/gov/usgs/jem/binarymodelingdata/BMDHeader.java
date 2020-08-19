@@ -45,9 +45,15 @@ public final class BMDHeader
 		 */
 		private Builder()
 		{
-
+			/** Nothing for now */
 		}
 
+		/**
+		 * @return BMDHeader
+		 * @throws Exception
+		 * @author mckelvym
+		 * @since Aug 13, 2020
+		 */
 		public BMDHeader build() throws Exception
 		{
 			return new BMDHeader(this);

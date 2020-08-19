@@ -1,13 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
-import java.io.IOException;
-import java.util.List;
-
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentrations;
 import gov.usgs.jem.binarymodelingdata.IProgressMonitor;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Query class for getting concentrations data. See

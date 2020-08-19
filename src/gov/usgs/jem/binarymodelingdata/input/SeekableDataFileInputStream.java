@@ -1,13 +1,12 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import com.google.common.io.LittleEndianDataInputStream;
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
-
-import com.google.common.io.LittleEndianDataInputStream;
 
 /**
  * Wraps a {@link DataInputStream} (big-endian) or a

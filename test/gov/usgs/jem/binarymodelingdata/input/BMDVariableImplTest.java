@@ -1,14 +1,13 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import gov.usgs.jem.binarymodelingdata.AllTests;
-import gov.usgs.jem.binarymodelingdata.BMDVariable;
 
 /**
  * Tests {@link BMDVariableImpl}
@@ -100,6 +99,7 @@ public class BMDVariableImplTest
 				m_Name, m_Units, m_PCode)) > 0);
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -157,6 +157,7 @@ public class BMDVariableImplTest
 		Assert.assertEquals(m_Units, m_Val.getUnits());
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

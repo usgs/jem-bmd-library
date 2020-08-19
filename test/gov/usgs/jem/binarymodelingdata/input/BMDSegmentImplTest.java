@@ -1,14 +1,13 @@
 package gov.usgs.jem.binarymodelingdata.input;
 
+import gov.usgs.jem.binarymodelingdata.AllTests;
+import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import gov.usgs.jem.binarymodelingdata.AllTests;
-import gov.usgs.jem.binarymodelingdata.BMDSegment;
 
 /**
  * Tests {@link BMDSegmentImpl}
@@ -93,6 +92,7 @@ public class BMDSegmentImplTest
 				m_Val.compareTo(new BMDSegmentImpl(m_Index - 1, m_Name)) > 0);
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -129,6 +129,7 @@ public class BMDSegmentImplTest
 		Assert.assertEquals(m_Name, m_Val.getName());
 	}
 
+	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

@@ -2,7 +2,6 @@ package gov.usgs.jem.binarymodelingdata.input;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
-
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
 import gov.usgs.jem.binarymodelingdata.BMDVariable;

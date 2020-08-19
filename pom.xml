@@ -5,7 +5,7 @@
 
 	<groupId>gov.usgs.jem.bmdconverter.group</groupId>
 	<artifactId>gov.usgs.jem.binarymodelingdata</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<packaging>${packaging.type}</packaging>
 	<name>Binary Modeling Data Library Plug-in</name>
 	<profiles>
@@ -26,7 +26,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<packaging.type>jar</packaging.type>
 
-		<com.google.guava.version>27.1-jre</com.google.guava.version>
+		<com.google.guava.version>29.0-jre</com.google.guava.version>
 		<org.apache.log4j.version>1.2.17</org.apache.log4j.version>
 		<org.eclipse.core.version>3.12.0.v20160606-1342</org.eclipse.core.version>
 		<org.junit.version>4.12</org.junit.version>

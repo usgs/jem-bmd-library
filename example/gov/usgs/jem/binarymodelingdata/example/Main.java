@@ -1,14 +1,6 @@
 package gov.usgs.jem.binarymodelingdata.example;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.log4j.BasicConfigurator;
-
 import com.google.common.collect.Iterables;
-
 import gov.usgs.jem.binarymodelingdata.AllTests;
 import gov.usgs.jem.binarymodelingdata.BMDSegment;
 import gov.usgs.jem.binarymodelingdata.BMDTimeStep;
@@ -16,6 +8,11 @@ import gov.usgs.jem.binarymodelingdata.BMDVariable;
 import gov.usgs.jem.binarymodelingdata.Concentration;
 import gov.usgs.jem.binarymodelingdata.input.BMDReader;
 import gov.usgs.jem.binarymodelingdata.input.ConcentrationsQuery;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  * Example using {@link BMDReader}
@@ -32,6 +29,11 @@ public final class Main
 	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger
 			.getLogger(Main.class);
 
+	/**
+	 * @param args
+	 * @throws IOException
+	 * @author mckelvym
+	 */
 	public static void main(final String[] args) throws IOException
 	{
 		BasicConfigurator.configure();
