@@ -16,6 +16,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 18, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BMDSegmentImplTest
 {
@@ -92,7 +93,6 @@ public class BMDSegmentImplTest
 				m_Val.compareTo(new BMDSegmentImpl(m_Index - 1, m_Name)) > 0);
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -129,7 +129,6 @@ public class BMDSegmentImplTest
 		Assert.assertEquals(m_Name, m_Val.getName());
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

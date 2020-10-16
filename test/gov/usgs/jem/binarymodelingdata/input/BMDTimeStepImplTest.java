@@ -16,6 +16,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 18, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BMDTimeStepImplTest
 {
@@ -97,7 +98,6 @@ public class BMDTimeStepImplTest
 				new BMDTimeStepImpl(m_Index - 1, m_TimeMS, m_RawValue)) > 0);
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -144,7 +144,6 @@ public class BMDTimeStepImplTest
 		Assert.assertEquals(m_RawValue, m_Val.getValue(), Double.MIN_NORMAL);
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

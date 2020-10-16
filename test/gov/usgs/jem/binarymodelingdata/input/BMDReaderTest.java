@@ -30,6 +30,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 18, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BMDReaderTest
 {

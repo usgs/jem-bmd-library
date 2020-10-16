@@ -19,6 +19,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 19, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConcentrationImplTest
 {
@@ -170,7 +171,6 @@ public class ConcentrationImplTest
 		}
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -228,7 +228,6 @@ public class ConcentrationImplTest
 		Assert.assertEquals(m_Variable, m_Concentration.getVariable());
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{

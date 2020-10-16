@@ -16,6 +16,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 18, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BMDVariableImplTest
 {
@@ -99,7 +100,6 @@ public class BMDVariableImplTest
 				m_Name, m_Units, m_PCode)) > 0);
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -157,7 +157,6 @@ public class BMDVariableImplTest
 		Assert.assertEquals(m_Units, m_Val.getUnits());
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{
