@@ -24,6 +24,7 @@ public final class BMDHeader
 	 * @since Apr 18, 2014
 	 *
 	 */
+	@SuppressWarnings("javadoc")
 	public static class Builder
 	{
 		private double	m_bEndTime;

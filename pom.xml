@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gov.usgs.jem.bmdconverter.group</groupId>
 	<artifactId>gov.usgs.jem.binarymodelingdata</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<packaging>${packaging.type}</packaging>
 	<name>Binary Modeling Data Library Plug-in</name>
 	<profiles>
@@ -28,10 +29,9 @@
 
 		<com.google.guava.version>29.0-jre</com.google.guava.version>
 		<org.apache.log4j.version>1.2.17</org.apache.log4j.version>
-		<org.eclipse.core.version>3.12.0.v20160606-1342</org.eclipse.core.version>
-		<org.junit.version>4.12</org.junit.version>
-		<org.junit.plugin.version>4.12.0</org.junit.plugin.version>
-		<tycho.version>1.4.0</tycho.version>
+		<org.junit.version>4.13</org.junit.version>
+		<org.junit.plugin.version>4.13.0</org.junit.plugin.version>
+		<tycho.version>2.0.0</tycho.version>
 	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -41,8 +41,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -64,7 +65,7 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					
+
 					<environments>
 						<environment>
 							<os>win32</os>

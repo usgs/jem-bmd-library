@@ -20,6 +20,7 @@ import org.junit.runners.MethodSorters;
  * @since Aug 19, 2016
  *
  */
+@SuppressWarnings("javadoc")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SeekableDataFileInputStreamImplTest
 {
@@ -180,7 +181,6 @@ public class SeekableDataFileInputStreamImplTest
 		}
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testEquals() throws Exception
 	{
@@ -217,7 +217,6 @@ public class SeekableDataFileInputStreamImplTest
 		Assert.assertEquals(m_FilePath, m_Input.getFilePath());
 	}
 
-	@SuppressWarnings("javadoc")
 	@Test
 	public final void testHashCode() throws Exception
 	{
